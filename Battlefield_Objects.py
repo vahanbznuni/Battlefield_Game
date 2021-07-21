@@ -32,17 +32,30 @@ class Ship:
     types = {"Carrier": 5, "Battleship": 4, "Destroyer": 3, "Submarine": 3,\
          "Patrol Boat": 2}
     
-    def __init__(self, coordinates, type):
+    def __init__(self, coordinates, type, battlefield):
         self.coordinates = coordinates
         self.type = type
+        size = Ship.types[self.type]
         self.ship_sunk = False
-
-    def place(self, battlefield):
         for coordinate in self.coordinates:
             battlefield.grid[coordinate] = Battlefield.states[1]
 
-    def gen_coordinates(self, type):
-        if type 
+    def get_coordinate_row(coordinate, battlefield):
+        return battlefield.rows[battlefield.rows.index(coordinate[0])
+    
+    def gen_coordinates(self):
+        coordinates = []
+        input_str = "Please choose {} coordinate for {}"
+        coord1 = input(input_str.format("starting", str(self.type)))
+        coordinates.append(coord1)
+        if self.size <=2:
+
+        # list[list.index(item + x)] <movinf up and down rows or columns
+        # coord2 = input(input_str.format("ending", str(self.type)))
+        # coordinates.append(coord2)
+
+        
+        
     
     #def check_health(self)
     #may be overlapping with class Player check health
