@@ -51,17 +51,15 @@ class Ship:
         last_down = str(self.get_coordinate_row(coordinate) - self.size) + coordinate[1]
         return [last_left, last_right, last_up, last_down]
     
+    #Code will not work because method cannot be used before object is defined, defeating the purpose of the method
     def gen_coordinates(self):
         coordinates = []
         input_str = "Please choose {} coordinate for {}"
         start_coordinate = input(input_str.format("starting", str(self.type)))
         coordinates.append(start_coordinate)
-        input_str_last = \
-            input_str.format("ending", str(self.type)) +\
-                "Option 1: " + self.get_last_coordinate_options(start_coordinate)[0] + "\n" +\
-                "Option 2: " + self.get_last_coordinate_options(start_coordinate)[1] + "\n" +\
-                "Option 3: " + self.get_last_coordinate_options(start_coordinate)[2] + "\n" +\
-                "Option 4: " + self.get_last_coordinate_options(start_coordinate)[3] + "\n"
+        input_str_last = input_str.format("ending", str(self.type)) + "from the following options: \n"
+        for num in len(self.get_last_coordinate_options(start_coordinate)):
+            input_str_last += "Option " + str(num) + ": " + self.get_last_coordinate_options(start_coordinate)[num-1] + "\n"
         last_coordinate = input(input_str_last)
         coordinates.append(last_coordinate)
         if self.size <= 2:
@@ -69,8 +67,7 @@ class Ship:
         else:
             count = 0
             while count <= self.size - 2:
-
-
+                pass
 
         # list[list.index(item + x)] <movinf up and down rows or columns
         # coord2 = input(input_str.format("ending", str(self.type)))
@@ -83,9 +80,9 @@ class Ship:
     #may be overlapping with class Player check health
     #try PLayer met5hod first
 
-class Carrier(Ship):
-    def __init__(self, coordinates, type="Carrier"):
-        super().__init__(coordinates, type)
+# class Carrier(Ship):
+#     def __init__(self, coordinates, type="Carrier"):
+#         super().__init__(coordinates, type)
 
 
 # class Player:
@@ -99,3 +96,7 @@ class Carrier(Ship):
     #     self.list_targetted_coordinates = []
 
 
+#========================================
+#Testing:
+my_battlefield = Battlefield(10, 10)
+#my_carrier = Ship()
