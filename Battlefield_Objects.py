@@ -35,20 +35,42 @@ class Ship:
     def __init__(self, coordinates, type, battlefield):
         self.coordinates = coordinates
         self.type = type
-        size = Ship.types[self.type]
+        self.battlefield = battlefield
+        self.size = Ship.types[self.type]
         self.ship_sunk = False
         for coordinate in self.coordinates:
-            battlefield.grid[coordinate] = Battlefield.states[1]
+            self.battlefield.grid[coordinate] = Battlefield.states[1]
 
-    def get_coordinate_row(coordinate, battlefield):
-        return battlefield.rows[battlefield.rows.index(coordinate[0])
+    def get_coordinate_row(self, coordinate):
+        return self.battlefield.rows[self.battlefield.rows.index(coordinate[0])]
+    
+    def get_last_coordinate_options(self, coordinate):
+        last_left = coordinate[0] + str(int(coordinate[1]) - self.size)
+        last_right = coordinate[0] + str(int(coordinate[1]) + self.size)
+        last_up = str(self.get_coordinate_row(coordinate) + self.size) + coordinate[1]
+        last_down = str(self.get_coordinate_row(coordinate) - self.size) + coordinate[1]
+        return [last_left, last_right, last_up, last_down]
     
     def gen_coordinates(self):
         coordinates = []
         input_str = "Please choose {} coordinate for {}"
-        coord1 = input(input_str.format("starting", str(self.type)))
-        coordinates.append(coord1)
-        if self.size <=2:
+        start_coordinate = input(input_str.format("starting", str(self.type)))
+        coordinates.append(start_coordinate)
+        input_str_last = \
+            input_str.format("ending", str(self.type)) +\
+                "Option 1: " + self.get_last_coordinate_options(start_coordinate)[0] + "\n" +\
+                "Option 2: " + self.get_last_coordinate_options(start_coordinate)[1] + "\n" +\
+                "Option 3: " + self.get_last_coordinate_options(start_coordinate)[2] + "\n" +\
+                "Option 4: " + self.get_last_coordinate_options(start_coordinate)[3] + "\n"
+        last_coordinate = input(input_str_last)
+        coordinates.append(last_coordinate)
+        if self.size <= 2:
+            return coordinates
+        else:
+            count = 0
+            while count <= self.size - 2:
+
+
 
         # list[list.index(item + x)] <movinf up and down rows or columns
         # coord2 = input(input_str.format("ending", str(self.type)))
