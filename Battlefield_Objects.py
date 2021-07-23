@@ -28,6 +28,24 @@ class Battlefield:
                         row.append("[X]")
             print(row_name + " " + "".join(row))
 
+    def target(self, coordinates):
+        if not self.grid[coordinates]:
+            self.grid[coordinates] = Battlefield.states[2]
+            self.display()
+            print("Empty waters hit. No ships at target")
+        elif self.grid[coordinates] == Battlefield.states[1]:
+            self.grid[coordinates] = Battlefield.states[3]
+            self.display()
+            print("Ship hit at target!")
+
+    #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^            
+    #Consider moving <target> method to Player object instead:
+    #If so, add step to append targetted coordinates to a list attribute
+    #Otherwise, create a seperate <target> method within player that 
+    #Calls target method of enemy battlefiled, and then proceeds to append
+    #targetted coordinates to a list attribute"
+    #========================================================================
+
 class Ship:
     types = {"Carrier": 5, "Battleship": 4, "Destroyer": 3, "Submarine": 3,\
          "Patrol Boat": 2}
@@ -38,12 +56,14 @@ class Ship:
         self.battlefield = battlefield
         self.size = Ship.types[self.type]
         self.ship_sunk = False
-        # for coordinate in self.coordinates:
-        #     self.battlefield.grid[coordinate] = Battlefield.states[1] 
+        for coordinate in self.coordinates:
+            self.battlefield.grid[coordinate] = Battlefield.states[1] 
     
-    #def check_health(self)
-    #may be overlapping with class Player check health
-    #try PLayer met5hod first
+    #========================================================================   
+    #def check_health(self) || #cancelled
+        #may be overlapping with class Player check health
+        #try defining this within Player method first
+    #========================================================================
 
 class Player:
     player_count = 0
@@ -55,28 +75,34 @@ class Player:
         self.fleet = {}
         self.list_targetted_coordinates = []
 
-    
+#=================================================================================================================
+#=================================================================================================================
+#STOP!
+#See ../Brainstorm/test.py
+#Update code based on revised logic in test.py
+#Consolidate, Refactor, and Simplify
+        
         ship_size = Ship.types[ship_type]
         
-        def get_coordinate_row(coordinate):
-            return self.battlefield.rows[self.battlefield.rows.index(coordinate[0])]
+        def get_coord_row_index(coordinate):
+            return self.battlefield.rows.index(coordinate[0])
         
-        def get_last_coordinate_options(coordinate):
+        def get_last_coords(coordinate):
             last_left = coordinate[0] + str(int(coordinate[1]) - ship_size)
             last_right = coordinate[0] + str(int(coordinate[1]) + ship_size)
-            last_up = str(get_coordinate_row(coordinate) + ship_size) + coordinate[1]
-            last_down = str(get_coordinate_row(coordinate) - ship_size) + coordinate[1]
+            last_up = self.battlefield.rows[get_coord_row_index(coordinate) + ship_size] + coordinate[1]
+            last_down = self.battlefield.rows[get_coord_row_index(coordinate) - ship_size] + coordinate[1]
             list_options = [last_left, last_right, last_up, last_down]
-            return [item for item in list_options if item[0] in self.battlefield.rows and item[1] in self.battlefield.columns]
+            return [item for item in list_options if item[0] in self.battlefield.rows and int(item[1:] in self.battlefield.columns]
         
-        def gen_coordinates():
+        def gen_coords():
             coordinates = []
             input_str = "Please enter {} coordinate for {}: "
             start_coordinate = input(input_str.format("starting", str(ship_type)))
             coordinates.append(start_coordinate)
             input_str_last = input_str.format("ending", str(ship_type)) + "from the following options: \n"
-            for num in len(get_last_coordinate_options(start_coordinate)):
-                input_str_last += "Option " + str(num) + ": " + get_last_coordinate_options(start_coordinate)[num-1] + "\n"
+            for num in len(get_last_coords(start_coordinate)):
+                input_str_last += "Option " + str(num) + ": " + get_last_coords(start_coordinate)[num-1] + "\n"
             last_coordinate = input(input_str_last)
             coordinates.append(last_coordinate)
             if ship_size <= 2:
@@ -88,9 +114,11 @@ class Player:
 
         
 
-#>>>>>>>>>>>>>>Not working as intended. Analyze elements and reassemble.^^^^^^^^^^^^^^^^^^^^^^^^^
+#STOP!
+#=================================================================================================================
+#=================================================================================================================
 
-#========================================
+
 #Testing:
 # player1 = Player()
 # player1_boat = player1.add_ship("Patrol Boat")
