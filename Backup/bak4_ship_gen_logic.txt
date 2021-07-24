@@ -1,0 +1,10 @@
+player1 = Player()
+player1.fleet = {}
+for ship_type in Ship.types.keys():
+    num = 1
+    ship_size = Ship.types[ship_type]
+    battlefield = player1.battlefield
+    ship = Ship(gen_coords(), ship_type, battlefield)
+    ship_var = "ship" + str(num)
+    player1.fleet[ship_var] = ship
+    num +=1
