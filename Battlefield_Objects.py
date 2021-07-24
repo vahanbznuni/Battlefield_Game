@@ -68,9 +68,8 @@ class Player:
         self.battlefield = Battlefield(10, 10)
         self.fleet = {}
         self.list_targetted_coordinates = []
+      
 
-#Consolidate, Refactor, and Simplify
-        
 def get_coord_row_index(coordinate):
     return battlefield.rows.index(coordinate[0])
 
@@ -90,9 +89,6 @@ def get_last_coords(coordinate):
         list_options.append(last_down)
     return list_options
 
-#Status: Working ✔ || needs consolidation & re-factoring with above
-#NextAfter: add code to manage incorrect inputs
-#Bonus: add functionality for displaying options. Ex: display option numbers on grid
 def gen_coords():
     coordinates = []
     input_str = "Please enter {} coordinate for {}: "
