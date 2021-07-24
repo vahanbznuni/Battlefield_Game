@@ -58,13 +58,7 @@ class Ship:
         self.ship_sunk = False
         for coordinate in self.coordinates:
             self.battlefield.grid[coordinate] = Battlefield.states[1] 
-    
-    #========================================================================   
-    #def check_health(self) || #cancelled
-        #may be overlapping with class Player check health
-        #try defining this within Player method first
-    #========================================================================
-
+   
 class Player:
     player_count = 0
 
@@ -75,51 +69,89 @@ class Player:
         self.fleet = {}
         self.list_targetted_coordinates = []
 
-#=================================================================================================================
-#=================================================================================================================
-#STOP!
-#See ../Brainstorm/test.py
-#Update code based on revised logic in test.py
 #Consolidate, Refactor, and Simplify
         
-        ship_size = Ship.types[ship_type]
-        
-        def get_coord_row_index(coordinate):
-            return self.battlefield.rows.index(coordinate[0])
-        
-        def get_last_coords(coordinate):
-            last_left = coordinate[0] + str(int(coordinate[1]) - ship_size)
-            last_right = coordinate[0] + str(int(coordinate[1]) + ship_size)
-            last_up = self.battlefield.rows[get_coord_row_index(coordinate) + ship_size] + coordinate[1]
-            last_down = self.battlefield.rows[get_coord_row_index(coordinate) - ship_size] + coordinate[1]
-            list_options = [last_left, last_right, last_up, last_down]
-            return [item for item in list_options if item[0] in self.battlefield.rows and int(item[1:] in self.battlefield.columns]
-        
-        def gen_coords():
-            coordinates = []
-            input_str = "Please enter {} coordinate for {}: "
-            start_coordinate = input(input_str.format("starting", str(ship_type)))
-            coordinates.append(start_coordinate)
-            input_str_last = input_str.format("ending", str(ship_type)) + "from the following options: \n"
-            for num in len(get_last_coords(start_coordinate)):
-                input_str_last += "Option " + str(num) + ": " + get_last_coords(start_coordinate)[num-1] + "\n"
-            last_coordinate = input(input_str_last)
-            coordinates.append(last_coordinate)
-            if ship_size <= 2:
-                return coordinates
-            else:
-                count = 0
-                while count <= ship_size - 2:
-                    pass
+def get_coord_row_index(coordinate):
+    return battlefield.rows.index(coordinate[0])
 
-        
+def get_last_coords(coordinate):
+    list_options = []
+    if int(coordinate[1]) - ship_size >= 1:
+        last_left = coordinate[0] + str(int(coordinate[1]) - ship_size)
+        list_options.append(last_left)
+    if int(coordinate[1]) + ship_size <= len(battlefield.columns):
+        last_right = coordinate[0] + str(int(coordinate[1]) + ship_size)
+        list_options.append(last_right)
+    if get_coord_row_index(coordinate) - ship_size >= 0:
+        last_up = battlefield.rows[get_coord_row_index(coordinate) - ship_size] + coordinate[1]
+        list_options.append(last_up)
+    if get_coord_row_index(coordinate) + ship_size < len(battlefield.rows):
+        last_down = battlefield.rows[get_coord_row_index(coordinate) - ship_size] + coordinate[1]
+        list_options.append(last_down)
+    return list_options
 
-#STOP!
+#Status: Working ✔ || needs consolidation & re-factoring with above
+#NextAfter: add code to manage incorrect inputs
+#Bonus: add functionality for displaying options. Ex: display option numbers on grid
+def gen_coords():
+    coordinates = []
+    input_str = "Please enter {} coordinate for {}: "
+    start_coordinate = input(input_str.format("starting", str(ship_type)))
+    coordinates.append(start_coordinate)
+    input_str_last = input_str.format("ending", str(ship_type)) + "from the following options: \n"
+    for num in range(len(get_last_coords(start_coordinate))):
+        input_str_last += "Option " + str(num+1) + ": " + get_last_coords(start_coordinate)[num] + "\n"
+    last_coordinate = input(input_str_last)
+    coordinates.append(last_coordinate)
+    if ship_size <= 2:
+        coordinates.sort()
+        return coordinates
+    else:
+        count = 0
+        coordinate = start_coordinate
+        while count <= ship_size - 2:
+            if start_coordinate[0] == last_coordinate[0]:
+                if start_coordinate[1] > last_coordinate[1]:
+                    next_coordinate = coordinate[0] + str(int(coordinate[1]) - 1)
+                    coordinates.append(next_coordinate)
+                    count += 1
+                    coordinate = next_coordinate
+                elif start_coordinate[1] < last_coordinate[1]:
+                    next_coordinate = coordinate[0] + str(int(coordinate[1]) + 1)
+                    coordinates.append(next_coordinate)
+                    count += 1
+                    coordinate = next_coordinate
+            elif  start_coordinate[1] == last_coordinate[1]:
+                if get_coord_row_index(start_coordinate[0]) > get_coord_row_index(last_coordinate[0]):
+                    next_coordinate = battlefield.rows[get_coord_row_index(coordinate) - 1] + coordinate[1]
+                    coordinates.append(next_coordinate)
+                    count += 1
+                    coordinate = next_coordinate
+                elif get_coord_row_index(start_coordinate[0]) < get_coord_row_index(last_coordinate[0]):
+                    next_coordinate = battlefield.rows[get_coord_row_index(coordinate) + 1] + coordinate[1]
+                    coordinates.append(next_coordinate)
+                    count += 1
+                    coordinate = next_coordinate
+        coordinates.sort()
+        return coordinates
+
+def get_random_coords(self, ship_type):
+    size = Ship.types[ship_type]
+    coords = []
+    import random
+    for num in range(size):
+        coords.append(self.battlefield.rows[random.randint(0, 10)] + str(random.randint(0, 10)))
+    return coords
+
 #=================================================================================================================
+test_battlefield = Battlefield(10, 10)
+test_carrier = Ship(["B2", "B3", "B4", "B5", "B6"], "Carrier", test_battlefield)
+battlefield = test_battlefield
+ship_type = "Carrier"
+ship_size = Ship.types[ship_type]
+print(gen_coords())
+
+
+
+
 #=================================================================================================================
-
-
-#Testing:
-# player1 = Player()
-# player1_boat = player1.add_ship("Patrol Boat")
-# print(player1_boat.coordinates
