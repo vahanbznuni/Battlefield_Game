@@ -42,23 +42,23 @@ class Battlefield:
     def coord_to_str(coordinate):
         return str(coordinate[0]) + str(coordinate[-1])
     
-    def get_coord_row_index(self, coordinate):
+    def row_index(self, coordinate):
         return self.rows.index(coordinate[0])
 
-    def get_last_coords(self, coordinate, ship_type):
+    def last_coord_opts(self, coordinate, ship_type):
         ship_size = Ship.types[ship_type]
         list_options = []
-        if (coordinate[-1]) - ship_size >= 1:
-            last_left = (coordinate[0], coordinate[-1] - ship_size)
+        if (coordinate[-1]) - (ship_size - 1) >= 1:
+            last_left = (coordinate[0], coordinate[-1] - (ship_size - 1))
             list_options.append(last_left)
-        if (coordinate[-1]) + ship_size <= len(self.columns):
-            last_right = (coordinate[0], coordinate[-1] + ship_size)
+        if (coordinate[-1]) + (ship_size - 1) <= len(self.columns):
+            last_right = (coordinate[0], coordinate[-1] + (ship_size - 1))
             list_options.append(last_right)
-        if self.get_coord_row_index(coordinate) - ship_size >= 0:
-            last_up = (self.rows[self.get_coord_row_index(coordinate) - ship_size], coordinate[-1])
+        if self.row_index(coordinate) - (ship_size - 1) >= 0:
+            last_up = (self.rows[self.row_index(coordinate) - (ship_size - 1)], coordinate[-1])
             list_options.append(last_up)
-        if self.get_coord_row_index(coordinate) + ship_size < len(self.rows):
-            last_down = (self.rows[self.get_coord_row_index(coordinate) + ship_size], coordinate[-1])
+        if self.row_index(coordinate) + (ship_size - 1) < len(self.rows):
+            last_down = (self.rows[self.row_index(coordinate) + (ship_size - 1)], coordinate[-1])
             list_options.append(last_down)
         return list_options
 
@@ -68,22 +68,23 @@ class Battlefield:
         print("\n")
         ship_size = Ship.types[ship_type]
         coordinates = []
-        input_str = "Please enter {} coordinate for {}: "
-        input1 = input(input_str.format("STARTING", str(ship_type)))
+        input_str = "Please enter {0} coordinate for the position of {1}: "
+        input1 = input(input_str.format("starting", str(ship_type)))
         start_coordinate = (input1[0], int(input1[1:]))
         coordinates.append(start_coordinate)
         print("\n")
         copy_grid = self.grid.copy()
         self.grid[start_coordinate] = "*"
-        input_str_last = input_str.format("ending", str(ship_type)).replace("enter", "choose") + "\n" + "\n" +\
-             "Enter the option *NUMBER* for your choice from the following options listed below - as shown on the grid: "+ "\n"
-        for num in range(len(self.get_last_coords(start_coordinate, ship_type))):
-            input_str_last += "Option " + str(num+1) + ": " + Battlefield.coord_to_str(self.get_last_coords(start_coordinate, ship_type)[num]) +"\n"
-            self.grid[self.get_last_coords(start_coordinate, ship_type)[num]] = num+1
+        input_str_last = input_str.format("ending", str(ship_type)).replace("enter", "choose").replace(":", ".") + "\n" +\
+             "Enter the *NUMBER* corresponding to the coordinates option of your choice : " + "\n" + "\n"
+        last_cords = self.last_coord_opts(start_coordinate, ship_type)
+        for num in range(len(last_cords)):
+            input_str_last += str(num+1) + ": " + Battlefield.coord_to_str((last_cords)[num]) +"\n"
+            self.grid[last_cords[num]] = num+1
         self.display()
         print("\n")
         input2 = input(input_str_last)
-        last_coordinate = self.get_last_coords(start_coordinate, ship_type)[int(input2) - 1]
+        last_coordinate = last_cords[int(input2) - 1]
         coordinates.append(last_coordinate)
         if ship_size <= 2:
             coordinates.sort()
@@ -105,13 +106,13 @@ class Battlefield:
                         count += 1
                         coordinate = next_coordinate
                 elif  start_coordinate[-1] == last_coordinate[-1]:
-                    if self.get_coord_row_index(start_coordinate) > self.get_coord_row_index(last_coordinate):
-                        next_coordinate = (self.rows[self.get_coord_row_index(coordinate) - 1], coordinate[-1])
+                    if self.row_index(start_coordinate) > self.row_index(last_coordinate):
+                        next_coordinate = (self.rows[self.row_index(coordinate) - 1], coordinate[-1])
                         coordinates.append(next_coordinate)
                         count += 1
                         coordinate = next_coordinate
-                    elif self.get_coord_row_index(start_coordinate) < self.get_coord_row_index(last_coordinate):
-                        next_coordinate = (self.rows[self.get_coord_row_index(coordinate) + 1], coordinate[-1])
+                    elif self.row_index(start_coordinate) < self.row_index(last_coordinate):
+                        next_coordinate = (self.rows[self.row_index(coordinate) + 1], coordinate[-1])
                         coordinates.append(next_coordinate)
                         count += 1
                         coordinate = next_coordinate
@@ -172,11 +173,13 @@ class Player:
       
 
 #=================================================================================================================
-# player1 = Player()
-# player1.battlefield.display()
+player1 = Player()
+player1.battlefield.display()
 
 # test_battlefield = Battlefield(10, 10)
 # print(test_battlefield.grid)
+# print("\n")
+# print(test_battlefield.gen_coords("Carrier"))
 
 
 # for key in Ship.types.keys():
