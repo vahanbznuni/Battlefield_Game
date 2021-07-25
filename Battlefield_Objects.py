@@ -167,10 +167,12 @@ class Player:
       
 
 #=================================================================================================================
-player1 = Player()
-player1.battlefield.display()
+# player1 = Player()
+# player1.battlefield.display()
 
 # test_battlefield = Battlefield(10, 10)
+
+
 # for key in Ship.types.keys():
 #     print(test_battlefield.gen_coords(key))
 #     print("\n")
