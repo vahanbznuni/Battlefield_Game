@@ -43,14 +43,13 @@ class Battlefield:
         return str(coordinate[0]) + str(coordinate[-1])
     
     def row_index(self, coordinate):
-        ship_size = Ship.types[ship_type]
         return self.rows.index(coordinate[0])
 
     def coord_up(self, coordinate):
         return (self.rows[self.row_index(coordinate) - 1], coordinate[-1])
 
     def coord_down(self, coordinate):
-        return return (self.rows[self.row_index(coordinate) + 1], coordinate[-1])
+        return (self.rows[self.row_index(coordinate) + 1], coordinate[-1])
 
     def coord_left(self, coordinate):
         return (coordinate[0], coordinate[-1] - 1)
@@ -62,6 +61,8 @@ class Battlefield:
     def last_coord_opts(self, coordinate, ship_type):
         ship_size = Ship.types[ship_type]
         list_options = []
+        row = 
+        column = 
         if (coordinate[-1]) - (ship_size - 1) >= 1:
             last_left = (coordinate[0], coordinate[-1] - (ship_size - 1))
             list_options.append(last_left)
