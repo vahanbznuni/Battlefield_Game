@@ -57,26 +57,55 @@ class Battlefield:
     def coord_right(self, coordinate):
         return (coordinate[0], coordinate[-1] + 1)
 
-    
-    def last_coord_opts(self, coordinate, ship_type):
+    def coord_opts(self, coordinate, ship_type):
         ship_size = Ship.types[ship_type]
-        list_options = []
-        row = 
-        column = 
-        if (coordinate[-1]) - (ship_size - 1) >= 1:
-            last_left = (coordinate[0], coordinate[-1] - (ship_size - 1))
-            list_options.append(last_left)
-        if (coordinate[-1]) + (ship_size - 1) <= len(self.columns):
-            last_right = (coordinate[0], coordinate[-1] + (ship_size - 1))
-            list_options.append(last_right)
+        options = {"Up: ": None, "Down: ": None, "Left: ": None, "Right: ": None, }
         if self.row_index(coordinate) - (ship_size - 1) >= 0:
-            last_up = (self.rows[self.row_index(coordinate) - (ship_size - 1)], coordinate[-1])
-            list_options.append(last_up)
+            up_coords = [coordinate]
+            current_coord = coordinate
+            for num in range(ship_size - 1):
+                next_coord = self.coord_up(current_coord)
+                if self.grid[next_coord] == Battlefield.states[5]:
+                    up_coords = None
+                    break
+                up_coords.append(next_coord)
+                current_coord = next_coord
+            options["Up: "] = up_coords
         if self.row_index(coordinate) + (ship_size - 1) < len(self.rows):
-            last_down = (self.rows[self.row_index(coordinate) + (ship_size - 1)], coordinate[-1])
-            list_options.append(last_down)
-        return list_options
-
+            down_coords = [coordinate]
+            current_coord = coordinate
+            for num in range(ship_size - 1):
+                next_coord = self.coord_down(current_coord)
+                if self.grid[next_coord] == Battlefield.states[5]:
+                    down_coords = None
+                    break
+                down_coords.append(next_coord)
+                current_coord = next_coord
+            options["Down: "] = down_coords
+        if (coordinate[-1]) - (ship_size - 1) >= 1:
+            left_coords = [coordinate]
+            current_coord = coordinate
+            for num in range(ship_size - 1):
+                next_coord = self.coord_left(current_coord)
+                if self.grid[next_coord] == Battlefield.states[5]:
+                    left_coords = None
+                    break
+                left_coords.append(next_coord)
+                current_coord = next_coord
+            options["Left: "] = left_coords
+        if (coordinate[-1]) + (ship_size - 1) <= len(self.columns):
+            right_coords = [coordinate]
+            current_coord = coordinate
+            for num in range(ship_size - 1):
+                next_coord = self.coord_right(current_coord)
+                if self.grid[next_coord] == Battlefield.states[5]:
+                    right_coords = None
+                    break
+                right_coords.append(next_coord)
+                current_coord = next_coord
+            options["Right: "] = right_coords
+        return {key: value for (key, value) in options.items() if value != None}
+    
     def gen_coords(self, ship_type):
         print("\n")
         self.display()
@@ -92,57 +121,35 @@ class Battlefield:
         self.grid[start_coordinate] = "*"
         input_str_last = input_str.format("ending", str(ship_type)).replace("enter", "choose").replace(":", ".") + "\n" +\
              "Enter the *NUMBER* corresponding to the coordinates option of your choice : " + "\n" + "\n"
-        last_cords = self.last_coord_opts(start_coordinate, ship_type)
-        for num in range(len(last_cords)):
-            input_str_last += str(num+1) + ": " + Battlefield.coord_to_str((last_cords)[num]) +"\n"
-            self.grid[last_cords[num]] = num+1
+        options = self.coord_opts(start_coordinate, ship_type)
+        num = 1
+        for key in options.keys():
+            last_coord = options[key][-1]
+            input_str_last += str(num) + " ({}): ".format(key[:-2]) + Battlefield.coord_to_str(last_coord) +"\n"
+            self.grid[last_coord] = num
+            num += 1
         self.display()
         print("\n")
         input2 = input(input_str_last)
-        last_coordinate = last_cords[int(input2) - 1]
-        coordinates.append(last_coordinate)
-        if ship_size <= 2:
-            coordinates.sort()
-            self.grid.update(copy_grid)
-            return coordinates
-        else:
-            count = 0
-            coordinate = start_coordinate
-            while count <= ship_size - 2:
-                if start_coordinate[0] == last_coordinate[0]:
-                    if start_coordinate[-1] > last_coordinate[-1]:
-                        next_coordinate = (coordinate[0], coordinate[-1] - 1)
-                        coordinates.append(next_coordinate)
-                        count += 1
-                        coordinate = next_coordinate
-                    elif start_coordinate[-1] < last_coordinate[-1]:
-                        next_coordinate = (coordinate[0], coordinate[-1] + 1)
-                        coordinates.append(next_coordinate)
-                        count += 1
-                        coordinate = next_coordinate
-                elif  start_coordinate[-1] == last_coordinate[-1]:
-                    if self.row_index(start_coordinate) > self.row_index(last_coordinate):
-                        next_coordinate = (self.rows[self.row_index(coordinate) - 1], coordinate[-1])
-                        coordinates.append(next_coordinate)
-                        count += 1
-                        coordinate = next_coordinate
-                    elif self.row_index(start_coordinate) < self.row_index(last_coordinate):
-                        next_coordinate = (self.rows[self.row_index(coordinate) + 1], coordinate[-1])
-                        coordinates.append(next_coordinate)
-                        count += 1
-                        coordinate = next_coordinate
-            coordinates.sort()
-            self.grid.update(copy_grid)
-            return coordinates
+        for coord in list(options.values())[int(input2) - 1][1:]:
+            coordinates.append(coord)
+        coordinates.sort()
+        self.grid.update(copy_grid)
+        return coordinates
 
-    def get_random_coords(self, ship_type):
-        ship_size = Ship.types[ship_type]
-        coords = []
-        import random
-        for num in range(ship_size):
-            coords.append((self.rows[random.randint(0, 10)], str(random.randint(0, 10))))
-        return coords
+    #========================================================================================================================
+    #[!] NEEDS REVISION | must return consecutive coortdinates.
+
+    # def get_random_coords(self, ship_type):
+    #     ship_size = Ship.types[ship_type]
+    #     coords = []
+    #     import random
+    #     for num in range(ship_size):
+    #         coords.append((self.rows[random.randint(0, 10)], str(random.randint(0, 10))))
+    #     return coords
     
+    #========================================================================================================================
+
     def generate_ships(self):
         fleet = {}
         for ship_type in Ship.types.keys():
@@ -188,22 +195,7 @@ class Player:
       
 
 #=================================================================================================================
-player1 = Player()
-player1.battlefield.display()
-
-# test_battlefield = Battlefield(10, 10)
-# print(test_battlefield.grid)
-# print("\n")
-# print(test_battlefield.gen_coords("Carrier"))
-
-
-# for key in Ship.types.keys():
-#     print(test_battlefield.gen_coords(key))
-#     print("\n")
-#     print("Final Battlefield: ")
-#     print("\n")
-#     test_battlefield.display()
-
+#Test_Zone:
 
 
 #=================================================================================================================
