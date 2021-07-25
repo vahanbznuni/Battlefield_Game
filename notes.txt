@@ -1,1 +1,4 @@
 Notes
+
+add Exception Handling
+add logic to check if another ship exists
