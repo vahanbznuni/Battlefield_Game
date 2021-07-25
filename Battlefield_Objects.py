@@ -172,10 +172,11 @@ class Player:
       
 
 #=================================================================================================================
-player1 = Player()
-player1.battlefield.display()
+# player1 = Player()
+# player1.battlefield.display()
 
 # test_battlefield = Battlefield(10, 10)
+# print(test_battlefield.grid)
 
 
 # for key in Ship.types.keys():
