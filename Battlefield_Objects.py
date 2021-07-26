@@ -112,30 +112,33 @@ class Battlefield:
         print("\n")
         ship_size = Ship.types[ship_type]
         coordinates = []
-        input_str = "Please enter {0} coordinate for the position of {1}: "
-        input1 = input(input_str.format("starting", str(ship_type)))
+        input_str = "Please enter {0} coordinate for the position of {1} ({2}): "
+        input1 = input(input_str.format("starting", str(ship_type), ship_size*"+"))
         start_coordinate = (input1[0], int(input1[1:]))
-        coordinates.append(start_coordinate)
-        print("\n")
-        copy_grid = self.grid.copy()
-        self.grid[start_coordinate] = "*"
-        input_str_last = input_str.format("ending", str(ship_type)).replace("enter", "choose").replace(":", ".") + "\n" +\
-             "Enter the *NUMBER* corresponding to the coordinates option of your choice : " + "\n" + "\n"
-        options = self.coord_opts(start_coordinate, ship_type)
-        num = 1
-        for key in options.keys():
-            last_coord = options[key][-1]
-            input_str_last += str(num) + " ({}): ".format(key[:-2]) + Battlefield.coord_to_str(last_coord) +"\n"
-            self.grid[last_coord] = num
-            num += 1
-        self.display()
-        print("\n")
-        input2 = input(input_str_last)
-        for coord in list(options.values())[int(input2) - 1][1:]:
-            coordinates.append(coord)
-        coordinates.sort()
-        self.grid.update(copy_grid)
-        return coordinates
+        if self.grid[start_coordinate] == Battlefield.states[5]:
+            raise BusyCoordinateException
+        else:
+            coordinates.append(start_coordinate)
+            print("\n")
+            copy_grid = self.grid.copy()
+            self.grid[start_coordinate] = "*"
+            input_str_last = input_str.format("ending", str(ship_type), ship_size*"+").replace("enter", "choose").replace(":", ".") + "\n" +\
+                "Enter the *NUMBER* corresponding to the coordinates option of your choice : " + "\n" + "\n"
+            options = self.coord_opts(start_coordinate, ship_type)
+            num = 1
+            for key in options.keys():
+                last_coord = options[key][-1]
+                input_str_last += str(num) + " ({}): ".format(key[:-2]) + Battlefield.coord_to_str(last_coord) +"\n"
+                self.grid[last_coord] = num
+                num += 1
+            self.display()
+            print("\n")
+            input2 = input(input_str_last)
+            for coord in list(options.values())[int(input2) - 1][1:]:
+                coordinates.append(coord)
+            coordinates.sort()
+            self.grid.update(copy_grid)
+            return coordinates
 
     #========================================================================================================================
     #[!] NEEDS REVISION | must return consecutive coortdinates.
@@ -154,7 +157,19 @@ class Battlefield:
         fleet = {}
         for ship_type in Ship.types.keys():
             num = 1
-            ship = Ship(self.gen_coords(ship_type), ship_type, self)
+            error_str = "\n" + "\n" + "INCORRECT INPUT! \n{} Please try again!"
+            while True:
+                try:
+                    ship = Ship(self.gen_coords(ship_type), ship_type, self)
+                    break
+                except ValueError:
+                    print(error_str.format(\
+                        """Make sure to enter exact coordinates (for starting coordinate)
+or exact choice number (for ending coordinate)."""))
+                except KeyError:
+                    print(error_str.format("Make sure your coordinates are in range!"))
+                except BusyCoordinateException:
+                    print(error_str.format("There is already a ship in that location!!"))
             ship_var = "ship" + str(num)
             fleet[ship_var] = ship
             num +=1
@@ -192,10 +207,20 @@ class Player:
         self.battlefield = Battlefield(10, 10)
         self.fleet = self.battlefield.generate_ships()
         self.list_targetted_coordinates = []
-      
+
+class InputException(Exception):
+    """
+    For Bad Inputs
+    """     
+
+class BusyCoordinateException(InputException):
+    """
+    For Bad coordinate inputs for placing ships where coordinate already contains ship
+    """ 
 
 #=================================================================================================================
 #Test_Zone:
-# test_player = Player()
+test_player = Player()
+test_player.battlefield.display()
 
 #=================================================================================================================
