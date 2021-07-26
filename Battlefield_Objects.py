@@ -250,10 +250,10 @@ class BusyCoordinateException(InputException):
 
 #=================================================================================================================
 #Test_Zone:
-test_player_Computer = Computer()
-test_player_Computer.battlefield.display()
-print("\n")
-test_player_Computer.battlefield.target(("G",7))
+# test_player_Computer = Computer()
+# test_player_Computer.battlefield.display()
+# print("\n")
+# test_player_Computer.battlefield.target(("G",7))
 
 # test_battlefield = Battlefield(10, 10)
 # print((test_battlefield.rows[random.randint(0, 10)], random.randint(0, 10)))
