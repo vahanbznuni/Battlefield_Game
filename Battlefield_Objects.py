@@ -1,4 +1,5 @@
 import string
+import random
 
 class Battlefield:
     states = [None, 1, 2, 3, 4, "healthy", "targetted", "hit", "*"]
@@ -140,23 +141,9 @@ class Battlefield:
             self.grid.update(copy_grid)
             return coordinates
 
-    #========================================================================================================================
-    #[!] NEEDS REVISION | must return consecutive coortdinates.
-
-    # def get_random_coords(self, ship_type):
-    #     ship_size = Ship.types[ship_type]
-    #     coords = []
-    #     import random
-    #     for num in range(ship_size):
-    #         coords.append((self.rows[random.randint(0, 10)], str(random.randint(0, 10))))
-    #     return coords
-    
-    #========================================================================================================================
-
     def generate_ships(self):
         fleet = {}
         for ship_type in Ship.types.keys():
-            num = 1
             error_str = "\n" + "\n" + "INCORRECT INPUT! \n{} Please try again!"
             while True:
                 try:
@@ -164,26 +151,39 @@ class Battlefield:
                     break
                 except ValueError:
                     print(error_str.format(\
-                        """Make sure to enter exact coordinates (for starting coordinate)
-or exact choice number (for ending coordinate)."""))
+                        """Make sure to enter exact coordinates (for starting coordinate) \nor exact choice number (for ending coordinate)."""))
                 except KeyError:
                     print(error_str.format("Make sure your coordinates are in range!"))
                 except BusyCoordinateException:
                     print(error_str.format("There is already a ship in that location!!"))
-            ship_var = "ship" + str(num)
-            fleet[ship_var] = ship
-            num +=1
+            fleet[ship_type] = ship
         return fleet
 
-    def target(self, coordinates):
-        if not self.grid[coordinates]:
-            self.grid[coordinates] = Battlefield.states[2]
-            self.display()
-            print("Empty waters hit. No ships at target")
-        elif self.grid[coordinates] == Battlefield.states[1]:
-            self.grid[coordinates] = Battlefield.states[3]
-            self.display()
-            print("Ship hit at target!")
+    def target(self, coordinate):
+        if self.grid[coordinate] == Battlefield.states[6] or self.grid[coordinate] == Battlefield.states[7]:
+            raise BusyCoordinateException
+        else:
+            if not self.grid[coordinate]:
+                self.grid[coordinate] = Battlefield.states[6]
+                self.display()
+                print("\n\nEmpty waters hit. No ships at target.\n\n")
+            elif self.grid[coordinate] == Battlefield.states[5]:
+                self.grid[coordinate] = Battlefield.states[7]
+                self.display()
+                print("\n\nShip hit at target!")
+
+# states = [None, 1, 2, 3, 4, "healthy", "targetted", "hit", "*"]
+
+class ComputerBattlefield(Battlefield):
+    def gen_coords(self, ship_type):
+        coordinates = []
+        start_coordinate = (self.rows[random.randint(0, len(self.rows)-1)], random.randint(0, 10))
+        coordinates.append(start_coordinate)
+        options = list(self.coord_opts(start_coordinate, ship_type).values())
+        for coord in options[random.randint(0, len(options)-1)][1:]:
+            coordinates.append(coord)
+        coordinates.sort()
+        return coordinates
 
 class Ship:
     types = {"Carrier": 5, "Battleship": 4, "Destroyer": 3, "Submarine": 3,\
@@ -196,7 +196,20 @@ class Ship:
         self.size = Ship.types[self.type]
         self.ship_sunk = False
         for coordinate in self.coordinates:
-            self.battlefield.grid[coordinate] = Battlefield.states[5] 
+            self.battlefield.grid[coordinate] = Battlefield.states[5]
+
+    def __repr__(self):
+        return "Type " + str(self.type) + ". Coordinates: " + str(self.coordinates)
+
+    def check_sunk(self):
+        hit_coordinates = 0
+        battlefield = self.battlefield
+        for coordinate in self.coordinates:
+            if battlefield[coordinate] == battlefield.states[8]:
+                hit_coordinates += 1
+        if hit_coordinates == self.size:
+            self.ship_sunk = True
+            print(self.type + " has been sunk!")
    
 class Player:
     player_count = 0
@@ -205,6 +218,23 @@ class Player:
         Player.player_count += 1
         self.id = Player.player_count
         self.battlefield = Battlefield(10, 10)
+        self.fleet = self.battlefield.generate_ships()
+        self.fleet_sunk = False
+        self.list_targetted_coordinates = []
+
+    def check_fleet_sunk(self):
+        sunk_ships = 0
+        for ship in self.fleet.values():
+            if ship.check_sunk():
+                sunk_ships += 1
+        if sunk_ships == len(self.fleet):
+            self.fleet_sunk = True
+
+class Computer(Player):
+    def __init__(self):
+        Player.player_count += 1
+        self.id = Player.player_count
+        self.battlefield = ComputerBattlefield(10, 10)
         self.fleet = self.battlefield.generate_ships()
         self.list_targetted_coordinates = []
 
@@ -215,12 +245,17 @@ class InputException(Exception):
 
 class BusyCoordinateException(InputException):
     """
-    For Bad coordinate inputs for placing ships where coordinate already contains ship
+    For Bad coordinate inputs when input coordinate already contains Ship; or was already targetted
     """ 
 
 #=================================================================================================================
 #Test_Zone:
-test_player = Player()
-test_player.battlefield.display()
+test_player_Computer = Computer()
+test_player_Computer.battlefield.display()
+print("\n")
+test_player_Computer.battlefield.target(("G",7))
+
+# test_battlefield = Battlefield(10, 10)
+# print((test_battlefield.rows[random.randint(0, 10)], random.randint(0, 10)))
 
 #=================================================================================================================

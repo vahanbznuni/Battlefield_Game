@@ -1,4 +1,17 @@
 Notes
 
-add Exception Handling
-add logic to check if another ship exists
+add Exception Handling ✔
+add logic to check if another ship exists ✔
+add Battlefield and Player subclasses for Computer ✔
+add ValueError handling to func target
+
+
+
+=======================
+logs:
+Added Fleet dict Keys ✔
+Added Exception Handling to target ✔
+Added Player subclass for Computer ✔
+Added Battlefield subclass for Computer ✔
+Added health check func for ship ✔
+Added fleet health check func for player ✔
