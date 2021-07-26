@@ -172,8 +172,6 @@ class Battlefield:
                 self.display()
                 print("\n\nShip hit at target!")
 
-# states = [None, 1, 2, 3, 4, "healthy", "targetted", "hit", "*"]
-
 class ComputerBattlefield(Battlefield):
     def gen_coords(self, ship_type):
         coordinates = []
