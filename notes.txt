@@ -1,9 +1,25 @@
 Notes
 
+Add algorhythm for computer to be able to do "smart" targetting
+    Use Coord_Options logic
+Add Turn management (if target hit)
+Add/Correct "Ship Sunk!" Statement
+Exception Handling for Main inputs
+Revise Visuals & Strings
+
+Debug (if needed)
+Maybe move computer-to-player targetting functionality into Objects Module (via Target func)
+
+
+
+
+
+=======================
+
 add Exception Handling ✔
 add logic to check if another ship exists ✔
 add Battlefield and Player subclasses for Computer ✔
-add ValueError handling to func target
+add ValueError handling to func target ✔?
 
 
 

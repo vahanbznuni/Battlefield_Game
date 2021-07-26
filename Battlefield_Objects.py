@@ -183,6 +183,32 @@ class ComputerBattlefield(Battlefield):
         coordinates.sort()
         return coordinates
 
+    def display(self):
+        print("   " + "  ".join([str(column) for column in self.columns]))
+        for row_name in self.rows:
+            row = []
+            for key in self.grid.keys():
+                if key[0] == row_name:
+                    if not self.grid[key]:
+                        row.append("[ ]")
+                    elif self.grid[key]==Battlefield.states[1]:
+                        row.append("[ ]")
+                    elif self.grid[key]==Battlefield.states[2]:
+                        row.append("[ ]")
+                    elif self.grid[key]==Battlefield.states[3]:
+                        row.append("[ ]")
+                    elif self.grid[key]==Battlefield.states[4]:
+                        row.append("[ ]")
+                    elif self.grid[key]==Battlefield.states[5]:
+                        row.append("[ ]")
+                    elif self.grid[key]==Battlefield.states[6]:
+                        row.append("[o]")
+                    elif self.grid[key]==Battlefield.states[7]:
+                        row.append("[X]")
+                    elif self.grid[key]==Battlefield.states[8]:
+                        row.append("[ ]")                   
+            print(row_name + " " + "".join(row))
+
 class Ship:
     types = {"Carrier": 5, "Battleship": 4, "Destroyer": 3, "Submarine": 3,\
          "Patrol Boat": 2}
