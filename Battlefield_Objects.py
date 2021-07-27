@@ -1,4 +1,5 @@
 import string
+from Battlefield_Strings import line_str1
 import random
 
 class Battlefield:
@@ -108,6 +109,7 @@ class Battlefield:
         return {key: value for (key, value) in options.items() if value != None}
     
     def gen_coords(self, ship_type):
+        print(line_str1)
         print("\n")
         self.display()
         print("\n")
@@ -166,7 +168,7 @@ class Battlefield:
             if not self.grid[coordinate]:
                 self.grid[coordinate] = Battlefield.states[6]
                 self.display()
-                print("\n\nEmpty waters hit. No ships at target.\n\n")
+                print("\n\nEmpty waters hit. No ships at target.")
             elif self.grid[coordinate] == Battlefield.states[5]:
                 self.grid[coordinate] = Battlefield.states[7]
                 self.display()

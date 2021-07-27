@@ -4,12 +4,103 @@ Add algorhythm for computer to be able to do "smart" targetting
     Use Coord_Options logic
 Add Turn management (if target hit)
 Add/Correct "Ship Sunk!" Statement
+Add Targeted Corrdinate after target result statement
 Exception Handling for Main inputs
 Revise Visuals & Strings
 
 Debug (if needed)
 Maybe move computer-to-player targetting functionality into Objects Module (via Target func)
 
+
+
+----------------------------------------------------------------------------------
+                                   WELCOME!
+----------------------------------------------------------------------------------
+
+=====================================================================
+String Review
+
+#---------------------------------------
+
+========================================================================
+
+BATTLEFIELD GAME | for: PYTHON TERMINAL | CREATED 2021 | BY VAHAN BZNUNI
+
+========================================================================
+
+
+WELCOME!
+
+
+
+>>>Please press ENTER key to continue<<<            <3 spaces
+------------------------------------------------------------------------
+
+
+This Battlefield game is a Python Terminal version of the classic 'Battlefield' game.   <2 spaces
+.....
+    of 10 x 10 squares (coordinates), and 5 ships of different lengths.
+
+
+>>>Please press ENTER key to continue<<<            <2 spaces
+------------------------------------------------------------------------
+
+
+This is what a sample Battlefield looks like:       <2 spaces
+.....
+[X] = Targetted and hit square (that was occupied by a ship)
+
+
+>>>Please press ENTER key to continue<<<            <2 spaces
+.....
+>>>Please press ENTER key to continue<<<
+------------------------------------------------------------------------
+
+It is time to place your ships! Are you ready?
+
+>>>Please press ENTER key to continue<<<
+.....
+Now it's your turn to target the enemy!
+
+>>>Please press ENTER key to continue<<<
+   1  2  3  4  5  6  7  8  9  10            <no line (--); no space 
+A [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]
+.....
+J [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]
+
+Please enter target coordinates!B2          < colon (:) may be better
+
+                                            <no line (--); 2 spaces 
+Empty waters hit. No ships at target.
+
+                                            <2 spaces
+>>>Please press ENTER key to continue<<<
+
+Now it's the Enemy's turn to target your Battlefield. Brace for impact! <2 spaces 
+
+   1  2  3  4  5  6  7  8  9  10
+A [o][o][ ][ ][ ][o][ ][ ][ ][ ]
+.....
+J [o][+][ ][ ][+][ ][ ][ ][ ][ ]
+
+>>>Please press ENTER key to continue<<<
+
+Enemy missles have landed!                  <no line
+   1  2  3  4  5  6  7  8  9  10            <no space
+A [o][o][ ][ ][ ][o][ ][ ][ ][ ]
+.....
+J [o][+][ ][ ][+][ ][ ][ ][ ][ ]
+
+
+Empty waters hit. No ships at target.       <2 spaces
+
+
+
+>>>Please press ENTER key to continue<<<
+
+Now it's your turn to target the enemy!     <no space
+#---------------------------------------
+=====================================================================
 
 
 

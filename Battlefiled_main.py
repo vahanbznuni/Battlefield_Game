@@ -1,13 +1,16 @@
+import string
 import Battlefield_Objects as obj
 import Battlefield_Strings as strings
 import random
 
 winner = None
 
+NL ="\n"
 strings.intro_str()
+# print(strings.line_str1)
 player2 = obj.Computer()
 player1 = obj.Player()
-print("\n" + strings.ready_str + "\n")
+print(NL + strings.ready_str + NL)
 player1.battlefield.display()
 input(strings.continue_str)
 
@@ -20,22 +23,24 @@ def check_winnter():
         winner = None
 
 while not winner:    
-    print("\n" + strings.target_str)
+    print(NL*2 + strings.target_str)
     input(strings.continue_str)
+    print(NL + strings.line_str1 + NL + strings.enemy_battlefield_str + NL)
     player2.battlefield.display()
-    input1 = input("\n" + strings.target_cords_str)
+    input1 = input(NL + strings.target_cords_str)
     target_coords = (input1[0], int(input1[1:]))
-    print("\n" + strings.target_complete)
+    print(NL*2 + strings.target_complete + NL)
     player2.battlefield.target(target_coords)
     check_winnter()
     if winner:
         print(strings.winner_str.format(winner))
     else:
         input(strings.continue_str)
-        print("\n" + strings.incoming_str + "\n")
+        print(NL*2 + strings.incoming_str + NL)
+        print(NL + strings.line_str1 + NL + strings.player_battlefield_str + NL)
         player1.battlefield.display()
         input(strings.continue_str)
-        print("\n" + strings.incoming_complete)
+        print(NL*2 + strings.incoming_complete+ NL)
         while True:
             try:
                 rows = player1.battlefield.rows
@@ -44,6 +49,7 @@ while not winner:
                 break
             except Exception:
                 pass
+        check_winnter()
         if winner:
             print(strings.winner_str.format(winner))
         else:
