@@ -14,13 +14,14 @@ player1.battlefield.display()
 input(strings.continue_str)
 
 def check_winnter():
-    if player1.check_fleet_sunk:
+    if player1.check_fleet_sunk():
         winner = player2
-    elif player2.check_fleet_sunk:
+    elif player2.check_fleet_sunk():
         winner = player1
     else:
         winner = None
 
+#Update
 while not winner:    
     print(NL*2 + strings.target_str)
     input(strings.continue_str)
@@ -29,7 +30,7 @@ while not winner:
     input1 = input(NL + strings.target_cords_str)
     target_coords = (input1[0], int(input1[1:]))
     print(NL*2 + strings.target_complete + NL)
-    player2.battlefield.target(target_coords)
+    player1.target(target_coords, player2)
     check_winnter()
     if winner:
         print(strings.winner_str.format(winner))
@@ -40,14 +41,14 @@ while not winner:
         player1.battlefield.display()
         input(strings.continue_str)
         print(NL*2 + strings.incoming_complete+ NL)
-        while True:
-            try:
-                rows = player1.battlefield.rows
-                comp_target = (rows[random.randint(0, len(rows)-1)], random.randint(0, 10))
-                player1.battlefield.target(comp_target)
-                break
-            except Exception:
-                pass
+        # while True:
+        #     try:
+        #         rows = player1.battlefield.rows
+                # comp_target = (rows[random.randint(0, len(rows)-1)], random.randint(0, 10))
+        #         player1.battlefield.target(comp_target)
+        #         break
+        #     except Exception:
+        #         pass
         check_winnter()
         if winner:
             print(strings.winner_str.format(winner))

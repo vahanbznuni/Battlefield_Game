@@ -1,9 +1,9 @@
 import string
-from Battlefield_Strings import line_str1
+from Battlefield_Strings import line_str1, NL, object_strings as obj_str
 import random
 
 class Battlefield:
-    states = [None, 1, 2, 3, 4, "healthy", "targetted", "hit", "*"]
+    states = [None, 1, 2, 3, 4, "healthy", "targetted", "hit", "*", "#"]
 
     def __init__(self, num_rows, num_columns):
         self.rows = [row for row in string.ascii_uppercase[:num_rows]]
@@ -37,9 +37,17 @@ class Battlefield:
                     elif self.grid[key]==Battlefield.states[7]:
                         row.append("[X]")
                     elif self.grid[key]==Battlefield.states[8]:
-                        row.append("[*]")                   
+                        row.append("[*]")
+                    elif self.grid[key]==Battlefield.states[9]:
+                        row.append("[#]")                      
             print(row_name + " " + "".join(row))
 
+    def display_wrapped(self):
+        print(line_str1)
+        print(NL)  
+        self.display()
+        print(NL)
+    
     @staticmethod
     def coord_to_str(coordinate):
         return str(coordinate[0]) + str(coordinate[-1])
@@ -109,70 +117,76 @@ class Battlefield:
         return {key: value for (key, value) in options.items() if value != None}
     
     def gen_coords(self, ship_type):
-        print(line_str1)
-        print("\n")
-        self.display()
-        print("\n")
+        self.display_wrapped()
         ship_size = Ship.types[ship_type]
         coordinates = []
-        input_str = "Please enter {0} coordinate for the position of {1} ({2}): "
+        input_str = obj_str.gen_coords_input1_str
         input1 = input(input_str.format("starting", str(ship_type), ship_size*"+"))
         start_coordinate = (input1[0], int(input1[1:]))
         if self.grid[start_coordinate] == Battlefield.states[5]:
             raise BusyCoordinateException
         else:
             coordinates.append(start_coordinate)
-            print("\n")
+            print(NL)
             copy_grid = self.grid.copy()
             self.grid[start_coordinate] = "*"
-            input_str_last = input_str.format("ending", str(ship_type), ship_size*"+").replace("enter", "choose").replace(":", ".") + "\n" +\
-                "Enter the *NUMBER* corresponding to the coordinates option of your choice : " + "\n" + "\n"
+            input2_str_addon = obj_str.gen_coords_input2_str_addon
+            input2_str = input_str.format("ending", str(ship_type), ship_size*"+").replace("enter", "choose").replace(":", ".") + "\n" +\
+                input2_str_addon + NL*2
             options = self.coord_opts(start_coordinate, ship_type)
-            num = 1
-            for key in options.keys():
-                last_coord = options[key][-1]
-                input_str_last += str(num) + " ({}): ".format(key[:-2]) + Battlefield.coord_to_str(last_coord) +"\n"
-                self.grid[last_coord] = num
-                num += 1
-            self.display()
-            print("\n")
-            input2 = input(input_str_last)
-            for coord in list(options.values())[int(input2) - 1][1:]:
-                coordinates.append(coord)
-            coordinates.sort()
-            self.grid.update(copy_grid)
-            return coordinates
-
-    def generate_ships(self):
-        fleet = {}
-        for ship_type in Ship.types.keys():
-            error_str = "\n" + "\n" + "INCORRECT INPUT! \n{} Please try again!"
-            while True:
-                try:
-                    ship = Ship(self.gen_coords(ship_type), ship_type, self)
-                    break
-                except ValueError:
-                    print(error_str.format(\
-                        """Make sure to enter exact coordinates (for starting coordinate) \nor exact choice number (for ending coordinate)."""))
-                except KeyError:
-                    print(error_str.format("Make sure your coordinates are in range!"))
-                except BusyCoordinateException:
-                    print(error_str.format("There is already a ship in that location!!"))
-            fleet[ship_type] = ship
-        return fleet
-
-    def target(self, coordinate):
-        if self.grid[coordinate] == Battlefield.states[6] or self.grid[coordinate] == Battlefield.states[7]:
-            raise BusyCoordinateException
-        else:
-            if not self.grid[coordinate]:
-                self.grid[coordinate] = Battlefield.states[6]
+            if not options:
+                raise NotEnoughRoomException
+            else:
+                num = 1
+                for key in options.keys():
+                    last_coord = options[key][-1]
+                    input2_str += str(num) + " ({}): ".format(key[:-2]) + Battlefield.coord_to_str(last_coord) +"\n"
+                    self.grid[last_coord] = num
+                    num += 1
                 self.display()
-                print("\n\nEmpty waters hit. No ships at target.")
-            elif self.grid[coordinate] == Battlefield.states[5]:
-                self.grid[coordinate] = Battlefield.states[7]
-                self.display()
-                print("\n\nShip hit at target!")
+                print(NL)
+                input2 = input(input2_str)
+                for coord in list(options.values())[int(input2) - 1][1:]:
+                    coordinates.append(coord)
+                coordinates.sort()
+                self.grid.update(copy_grid)
+                return coordinates
+
+    def input_coords(self, coordinate):
+        error_str = obj_str.error_str
+        while True:
+            try:
+                input_coord = coordinate
+                break
+            except ValueError:
+                print(error_str.format(obj_str.value_error_str))
+            except KeyError:
+                print(error_str.format(obj_str.key_error_str))
+            except BusyCoordinateException:
+                print(error_str.format(obj_str.busy_coord_error_str))
+            except NotEnoughRoomException:
+                print(error_str.format(obj_str.not_enough_room_error_str))
+            except TargettedCoordinateException:
+                print(error_str.format(obj_str.targetted_coord_error_str))
+        return input_coord
+       
+    # def generate_ships(self):
+    #     fleet = {}
+    #     for ship_type in Ship.types.keys():
+    #         while True:
+    #             try:
+    #                 ship = Ship(self.gen_coords(ship_type), ship_type, self)
+    #                 break
+    #             except ValueError:
+    #                 print(error_str.format(obj_str.value_error_str))
+    #             except KeyError:
+    #                 print(error_str.format(obj_str.key_error_str))
+    #             except BusyCoordinateException:
+    #                 print(error_str.format(obj_str.busy_coord_error_str))
+    #             except NotEnoughRoomException:
+    #                 print(error_str.format(obj_str.not_enough_room_error_str))
+    #         fleet[ship_type] = ship
+    #     return fleet
 
 class ComputerBattlefield(Battlefield):
     def gen_coords(self, ship_type):
@@ -208,7 +222,9 @@ class ComputerBattlefield(Battlefield):
                     elif self.grid[key]==Battlefield.states[7]:
                         row.append("[X]")
                     elif self.grid[key]==Battlefield.states[8]:
-                        row.append("[ ]")                   
+                        row.append("[ ]")
+                    elif self.grid[key]==Battlefield.states[9]:
+                        row.append("[#]")                    
             print(row_name + " " + "".join(row))
 
 class Ship:
@@ -220,7 +236,7 @@ class Ship:
         self.type = type
         self.battlefield = battlefield
         self.size = Ship.types[self.type]
-        self.ship_sunk = False
+        self.sunk = False
         for coordinate in self.coordinates:
             self.battlefield.grid[coordinate] = Battlefield.states[5]
 
@@ -231,11 +247,13 @@ class Ship:
         hit_coordinates = 0
         battlefield = self.battlefield
         for coordinate in self.coordinates:
-            if battlefield[coordinate] == battlefield.states[8]:
+            if battlefield[coordinate] == battlefield.states[7]:
                 hit_coordinates += 1
         if hit_coordinates == self.size:
-            self.ship_sunk = True
-            print(self.type + " has been sunk!")
+            self.sunk = True
+            for coordinate in self.coordinates:
+                self.battlefield.grid[coordinate] = Battlefield.states[9]
+            print(NL*2 + self.type + " HAS BEEN SUNK!!!")
    
 class Player:
     player_count = 0
@@ -246,15 +264,54 @@ class Player:
         self.battlefield = Battlefield(10, 10)
         self.fleet = self.battlefield.generate_ships()
         self.fleet_sunk = False
-        self.list_targetted_coordinates = []
+        self.targetted_coordinates = []
+        self.hit_coordinates = []
+        self.active_targets = []
 
     def check_fleet_sunk(self):
         sunk_ships = 0
         for ship in self.fleet.values():
-            if ship.check_sunk():
+            if ship.sunk:
                 sunk_ships += 1
         if sunk_ships == len(self.fleet):
             self.fleet_sunk = True
+        return self.check_fleet_sunk
+
+    def target(self, player):
+        shot = 0
+        last_shot_hit = False
+        while shot < 1 or last_shot_hit:
+            battlefiled = player.battlefield
+            grid = player.battlefield.grid
+            player.battlefield.display_wrapped()
+            while True:
+                error_str = obj_str.error_str
+                try:
+                    coordinate = battlefiled.input_coords(input(obj_str.target_cords_str))
+                    if grid[coordinate] == Battlefield.states[6] or grid[coordinate] == Battlefield.states[7]\
+                        or grid[coordinate] == Battlefield.states[9]:
+                        raise BusyCoordinateException
+                    break
+                except ValueError:
+                    print(error_str.format(obj_str.value_error_str))
+                except KeyError:
+                    print(error_str.format(obj_str.key_error_str))
+                except TargettedCoordinateException:
+                    print(error_str.format(obj_str.targetted_coord_error_str))
+            if not grid[coordinate]:
+                grid[coordinate] = Battlefield.states[6]
+                battlefiled.display()
+                print(NL*2 + obj_str.empty_waters_str)
+                shot += 1
+                last_shot_hit = False
+            elif self.grid[coordinate] == Battlefield.states[5]:
+                grid[coordinate] = Battlefield.states[7]
+                battlefiled.display()
+                print(NL*2 + obj_str.ship_hit_str)
+                last_shot_hit = True
+                shot += 1
+                for ship in self.fleet:
+                    ship.check_sunk
 
 class Computer(Player):
     def __init__(self):
@@ -262,7 +319,77 @@ class Computer(Player):
         self.id = Player.player_count
         self.battlefield = ComputerBattlefield(10, 10)
         self.fleet = self.battlefield.generate_ships()
-        self.list_targetted_coordinates = []
+        self.targetted_coordinates = []
+        self.hit_coordinates = []
+        self.active_targets = []
+
+    def target_options(self, player):
+        battlefiled = player.battlefield
+        if self.active_targets:
+            for coordinate in self.active_targets:
+                leads = []
+                leads.append(battlefiled.coord_up(coordinate))
+                leads.append(battlefiled.coord_down(coordinate))
+                leads.append(battlefiled.coord_left(coordinate))
+                leads.append(battlefiled.coord_right(coordinate))
+                for coordinate in leads:
+                    check = False
+                    if coordinate in self.hit_coordinates:
+                        check = True
+                if not check:
+                    self.target_options.extend[leads]
+                else:
+                    if leads[0] in self.hit_coordinates:
+                        self.target_options.append(leads[1])
+                    elif leads[1] in self.hit_coordinates:
+                        self.target_options.append(leads[0])
+                    elif leads[2] in self.hit_coordinates:
+                        self.target_options.append(leads[3])
+                    elif leads[3] in self.hit_coordinates:
+                        self.target_options.append(leads[2])
+            return self.target_options
+
+    def target(self, player):
+        shot = 0
+        last_shot_hit = False
+        while shot < 1 or last_shot_hit:
+            battlefiled = player.battlefield
+            grid = player.battlefield.grid
+            rows = battlefiled.rows
+            player.battlefield.display_wrapped()
+            while True:
+                try:
+                    if not self.active_targets:
+                        coordinate = rows[random.randint(0, len(rows)-1)], random.randint(0, 10)
+                    else:
+                        options = self.active_targets
+                        coordinate = options[random.randint(0, len(options)]
+                    if grid[coordinate] == Battlefield.states[6] or grid[coordinate] == Battlefield.states[7]:
+                        raise BusyCoordinateException
+                    break
+                except Exception:
+                    pass
+            self.targetted_coordinates.append(coordinate)
+            if not grid[coordinate]:
+                grid[coordinate] = Battlefield.states[6]
+                battlefiled.display()
+                print(NL*2 + obj_str.empty_waters_str)
+                shot += 1
+                last_shot_hit = False
+            elif grid[coordinate] == Battlefield.states[5]:
+                grid[coordinate] = Battlefield.states[7]
+                battlefiled.display()
+                print(NL*2 + obj_str.ship_hit_str)
+                last_shot_hit = True
+                shot += 1
+                self.hit_coordinates.append(coordinate)
+                self.active_targets.append(coordinate)
+                for ship in player.fleet.values():
+                    if coordinate in ship.coordinates:
+                        ship.check_sunk()
+                        if ship.sunk:
+                            for coord in ship.coordinates:
+                                self.active_targets.pop(coord)
 
 class InputException(Exception):
     """
@@ -271,9 +398,18 @@ class InputException(Exception):
 
 class BusyCoordinateException(InputException):
     """
-    For Bad coordinate inputs when input coordinate already contains Ship; or was already targetted
+    For Bad coordinate inputs when input coordinate already contains Ship
     """ 
 
+class TargettedCoordinateException(InputException):
+    """
+    For Bad coordinate inputs when input coordinate has already been targetted
+    """ 
+
+class NotEnoughRoomException(Exception):
+    """
+    For Bad coordinate inputs when input coordinate does not allow enough room for given ship
+    """ 
 #=================================================================================================================
 #Test_Zone:
 # test_player_Computer = Computer()
@@ -281,7 +417,9 @@ class BusyCoordinateException(InputException):
 # print("\n")
 # test_player_Computer.battlefield.target(("G",7))
 
-# test_battlefield = Battlefield(10, 10)
+test_battlefield = Battlefield(10, 10)
 # print((test_battlefield.rows[random.randint(0, 10)], random.randint(0, 10)))
+
+print(test_battlefield.input_coords(test_battlefield.gen_coords("Carrier"))
 
 #=================================================================================================================
