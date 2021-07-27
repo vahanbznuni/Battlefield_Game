@@ -7,7 +7,6 @@ winner = None
 
 NL ="\n"
 strings.intro_str()
-# print(strings.line_str1)
 player2 = obj.Computer()
 player1 = obj.Player()
 print(NL + strings.ready_str + NL)
