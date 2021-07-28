@@ -20,7 +20,6 @@ def check_winnter():
         winner = None
     return winner
 
-#Update
 while not check_winnter():    
     print(NL*2 + strings.target_str)
     input(strings.continue_str)
