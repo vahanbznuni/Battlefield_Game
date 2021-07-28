@@ -88,12 +88,12 @@ ready_str = "Your ships are all set! Here is your Battlefield:"
 target_str = "Now it's your turn to target the enemy!"
 enemy_battlefield_str = "Enemy Battlefield: "
 
-target_complete = "We've fired our missles to target!"
+
 incoming_str = "Now it's the Enemy's turn to target your Battlefield. Brace for impact!"
 player_battlefield_str = "Your Battlefield: "
-incoming_complete = "Enemy missles have landed!"
+
 winner_str_raw = "{} HAS WON!!!"
-winner_str = textwrap.dedent(line_wrap2(winner_str_raw))
+winner_str = textwrap.dedent(line_wrap3(winner_str_raw))
 final_str_raw = "THANK YOU FOR PLAYING!"
 final_str = NL + textwrap.dedent(line_wrap1(final_str_raw))
 
@@ -102,11 +102,14 @@ class object_strings:
     target_cords_str = "Please enter target coordinates!"
     value_error_str = "Make sure to enter exact coordinates (for starting coordinate) \nor exact choice number (for ending coordinate)."
     key_error_str = "Make sure your coordinates are in range!"
+    index_error_str = "Make sure to enter exact coordinates (for starting coordinate) \nor exact choice number (for ending coordinate)."
     busy_coord_error_str = "There is already a ship in that location!!"
     targetted_coord_error_str = "These Coordinates have already been targetted!!"
     not_enough_room_error_str = "There is no enough room for this ship at that coordinate!"
     gen_coords_input1_str = "Please enter {0} coordinate for the position of {1} ({2}): "
     gen_coords_input2_str_addon = "Enter the *NUMBER* corresponding to the coordinates option of your choice : "
+    target_complete = "We've fired our missles to target!"
+    incoming_complete = "Enemy missles have landed!"
     ship_hit_str = "Ship hit at target!"
     empty_waters_str = "Empty waters hit. No ships at target."
 
