@@ -53,19 +53,35 @@ class Battlefield:
         return str(coordinate[0]) + str(coordinate[-1])
     
     def row_index(self, coordinate):
-        return self.rows.index(coordinate[0])
+            return self.rows.index(coordinate[0])
+
+    def get_row(self, coordinate):
+        row = []
+        for column in self.columns:
+            row.append((coordinate[0], column))
+        return row
+
+    def get_column(self, coordinate):
+        column = []
+        for row in self.rows:
+            column.append(row, coordinate[-1])
+        return column
 
     def coord_up(self, coordinate):
-        return (self.rows[self.row_index(coordinate) - 1], coordinate[-1])
+        if self.row_index(coordinate) - 1 >= 0:
+            return (self.rows[self.row_index(coordinate) - 1], coordinate[-1])
 
     def coord_down(self, coordinate):
-        return (self.rows[self.row_index(coordinate) + 1], coordinate[-1])
+        if self.row_index(coordinate) + 1 < len(self.rows):
+            return (self.rows[self.row_index(coordinate) + 1], coordinate[-1])
 
     def coord_left(self, coordinate):
-        return (coordinate[0], coordinate[-1] - 1)
+        if (coordinate[-1]) - 1 >= 1:
+            return (coordinate[0], coordinate[-1] - 1)
 
     def coord_right(self, coordinate):
-        return (coordinate[0], coordinate[-1] + 1)
+        if (coordinate[-1]) + 1 <= len(self.columns):
+            return (coordinate[0], coordinate[-1] + 1)
 
     def coord_opts(self, coordinate, ship_type):
         ship_size = Ship.types[ship_type]
@@ -344,31 +360,59 @@ class Computer(Player):
         target_options = []
         if self.active_targets:
             for coordinate in self.active_targets: 
-                candidates = []
-                candidates.append(battlefiled.coord_up(coordinate))
-                candidates.append(battlefiled.coord_down(coordinate))
-                candidates.append(battlefiled.coord_left(coordinate))
-                candidates.append(battlefiled.coord_right(coordinate))
-                for candidate in candidates:
-                    if candidate in self.hit_coordinates:
-                        if candidates[0] in self.hit_coordinates:
-                            if candidates[1] not in self.targetted_coordinates and candidates[1] not in target_options: 
-                                target_options.append(candidates[1])
-                        elif candidates[1] in self.hit_coordinates:
-                            if candidates[0] not in self.targetted_coordinates and candidates[0] not in target_options:
-                                target_options.append(candidates[0])
-                        elif candidates[2] in self.hit_coordinates:
-                            if candidates[3] not in self.targetted_coordinates and candidates[3] not in target_options:
-                                target_options.append(candidates[3])
-                        elif candidates[3] in self.hit_coordinates:
-                            if candidates[2] not in self.targetted_coordinates and candidates[2] not in target_options:
-                                target_options.append(candidates[2])
-                        if not target_options:
-                            candidates2 = [candidate for candidate in candidates if candidate not in self.targetted_coordinates]
-                            target_options.extend[candidates2]
+                options = []
+                if battlefiled.coord_up(coordinate):
+                    coord_up = battlefiled.coord_up(coordinate)
                 else:
-                    candidates2 = [candidate for candidate in candidates if candidate not in self.targetted_coordinates]
-                    target_options.extend(candidates2)
+                    coord_up = None
+                if battlefiled.coord_down(coordinate):
+                    coord_down = battlefiled.coord_down(coordinate)
+                else:
+                    coord_down = None
+                if battlefiled.coord_left(coordinate):
+                    coord_left = battlefiled.coord_left(coordinate)
+                else:
+                    coord_left = None
+                if battlefiled.coord_right(coordinate):
+                    coord_right = battlefiled.coord_right(coordinate)
+                else:
+                    coord_right = None
+                if coord_up:
+                    if coord_up in self.hit_coordinates:
+                        if coord_down:
+                            if coord_down not in self.targetted_coordinates and coord_down not in target_options:
+                                options.append(coord_down)
+                            elif coord_down in self.hit_coordinates:
+                                pass
+                if coord_down:
+                    if coord_down in self.hit_coordinates:
+                        if coord_up:
+                            if coord_up not in self.targetted_coordinates and coord_up not in target_options:
+                                target_options.append(coord_up)
+                if coord_left:
+                    if coord_left in self.hit_coordinates:
+                        if coord_right:
+                            if coord_right not in self.targetted_coordinates and coord_right not in target_options:
+                                target_options.append(coord_right)
+                if coord_right:
+                    if coord_right in self.hit_coordinates:
+                        if coord_left:
+                            if coord_left not in self.targetted_coordinates and coord_left not in target_options:
+                                target_options.append(coord_left)
+                if not options:
+                    if coord_up:
+                        if coord_up not in self.targetted_coordinates and coord_up not in target_options:
+                            options.append(coord_up)
+                    if coord_down:
+                        if coord_down not in self.targetted_coordinates and coord_down not in target_options:
+                            options.append(coord_down)
+                    if coord_left:
+                        if coord_left not in self.targetted_coordinates and coord_left not in target_options:
+                            options.append(coord_left)
+                    if coord_right:
+                        if coord_right not in self.targetted_coordinates and coord_right not in target_options:
+                            options.append(coord_right)
+                target_options.extend(option for option in options if option not in target_options)
         return target_options
 
     def target(self, player):
@@ -438,11 +482,13 @@ class NotEnoughRoomException(Exception):
 #Test_Zone:
 test_player = Player()
 test_computer = Computer()
+test_player.battlefield.display_wrapped()
 test_coordinates1 = []
 for ship in test_player.fleet.values():
     for coordinate in ship.coordinates:
         test_coordinates1.append(coordinate)
 hit_coords = [coord for coord in test_coordinates1 if test_coordinates1.index(coord)%2 == 0]
+hit_coords.extend([list(test_player.fleet.values())[0].coordinates[1], list(test_player.fleet.values())[1].coordinates[1]])
 for coord in hit_coords:
     test_player.battlefield.grid[coord] = test_player.battlefield.states[7]
 test_computer.hit_coordinates = hit_coords
@@ -450,8 +496,17 @@ test_computer.targetted_coordinates = hit_coords
 test_computer.active_targets = hit_coords
 test_player.battlefield.display_wrapped()
 
-
-print("Coordinate Options: ")
+print(NL + "targetted_coordinates: " + NL)
+print(test_computer.targetted_coordinates)
+print(NL + "active_targets: " + NL)
+print(test_computer.active_targets)
+print(NL + "hit_coordinates: " + NL)
+print(test_computer.hit_coordinates)
+print(NL + "target_options: " + NL)
 print(test_computer.target_options(test_player))
+
+for coord in test_computer.target_options(test_player):
+    test_player.battlefield.grid[coord] = test_player.battlefield.states[8]
+test_player.battlefield.display_wrapped()
 
 #=================================================================================================================
