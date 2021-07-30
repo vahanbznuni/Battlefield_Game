@@ -88,7 +88,6 @@ ready_str = "Your ships are all set! Here is your Battlefield:"
 target_str = "Now it's your turn to target the enemy!"
 enemy_battlefield_str = "Enemy Battlefield: "
 
-
 incoming_str = "Now it's the Enemy's turn to target your Battlefield. Brace for impact!"
 player_battlefield_str = "Your Battlefield: "
 

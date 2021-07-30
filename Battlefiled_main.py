@@ -28,6 +28,7 @@ while not check_winnter():
     if check_winnter():
         print(strings.winner_str.format(check_winnter()))
     else:
+        print(NL*2 + strings.incoming_str)
         input(strings.continue_str)
         player2.target(player1)
         if check_winnter():

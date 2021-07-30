@@ -251,12 +251,12 @@ class Ship:
         hit_coordinates = 0
         battlefield = self.battlefield
         for coordinate in self.coordinates:
-            if battlefield[coordinate] == battlefield.states[7]:
+            if battlefield.grid[coordinate] == battlefield.states[7]:
                 hit_coordinates += 1
         if hit_coordinates == self.size:
             self.sunk = True
             for coordinate in self.coordinates:
-                self.battlefield.grid[coordinate] = Battlefield.states[9]
+                battlefield.grid[coordinate] = Battlefield.states[9]
             print(NL*2 + self.type + " HAS BEEN SUNK!!!")
    
 class Player:
@@ -290,38 +290,40 @@ class Player:
         while shot < 1 or last_shot_hit:
             battlefiled = player.battlefield
             grid = player.battlefield.grid
-            battlefiled.display_wrapped()
             while True:
+                battlefiled.display_wrapped()
                 error_str = obj_str.error_str
                 try:
                     input1 = (input(obj_str.target_cords_str))
                     coordinate = (input1[0], int(input1[1:]))
                     if grid[coordinate] == Battlefield.states[6] or grid[coordinate] == Battlefield.states[7]\
                         or grid[coordinate] == Battlefield.states[9]:
-                        raise BusyCoordinateException
+                        raise TargettedCoordinateException
                     break
                 except ValueError:
                     print(error_str.format(obj_str.value_error_str))
                 except KeyError:
                     print(error_str.format(obj_str.key_error_str))
+                except IndexError:
+                    print(error_str.format(obj_str.index_error_str))
                 except TargettedCoordinateException:
                     print(error_str.format(obj_str.targetted_coord_error_str))
             if not grid[coordinate]:
                 grid[coordinate] = Battlefield.states[6]
-                print(NL*2 + obj_str.strings.target_complete + NL)
+                print(NL*2 + obj_str.target_complete + NL)
                 battlefiled.display()
                 print(NL*2 + obj_str.empty_waters_str)
                 shot += 1
                 last_shot_hit = False
-            elif self.grid[coordinate] == Battlefield.states[5]:
+            elif grid[coordinate] == Battlefield.states[5]:
                 grid[coordinate] = Battlefield.states[7]
-                print(NL*2 + obj_str.strings.target_complete + NL)
+                print(NL*2 + obj_str.target_complete + NL)
                 battlefiled.display()
                 print(NL*2 + obj_str.ship_hit_str)
                 last_shot_hit = True
                 shot += 1
-                for ship in self.fleet:
-                    ship.check_sunk
+                for ship in self.fleet.values():
+                    ship.check_sunk()
 
 class Computer(Player):
     def __init__(self):
@@ -334,13 +336,13 @@ class Computer(Player):
         self.hit_coordinates = []
         self.active_targets = []
 
-        def __repr__(self):
-            return "Computer"
+    def __repr__(self):
+        return "Computer"
     
     def target_options(self, player):
         battlefiled = player.battlefield
+        target_options = []
         if self.active_targets:
-            target_options = []
             for coordinate in self.active_targets: 
                 candidates = []
                 candidates.append(battlefiled.coord_up(coordinate))
@@ -366,8 +368,8 @@ class Computer(Player):
                             target_options.extend[candidates2]
                 else:
                     candidates2 = [candidate for candidate in candidates if candidate not in self.targetted_coordinates]
-                    target_options.extend[candidates2]
-            return target_options
+                    target_options.extend(candidates2)
+        return target_options
 
     def target(self, player):
         shot = 0
@@ -380,7 +382,7 @@ class Computer(Player):
             while True:
                 try:
                     if not self.active_targets:
-                        coordinate = rows[random.randint(0, len(rows)-1)], random.randint(0, 10)
+                        coordinate = (rows[random.randint(0, len(rows)-1)], random.randint(0, 10))
                     else:
                         options = self.target_options(player)
                         coordinate = options[random.randint(0, len(options))]
@@ -434,6 +436,22 @@ class NotEnoughRoomException(Exception):
     """ 
 #=================================================================================================================
 #Test_Zone:
-# test_player = Player()
+test_player = Player()
+test_computer = Computer()
+test_coordinates1 = []
+for ship in test_player.fleet.values():
+    for coordinate in ship.coordinates:
+        test_coordinates1.append(coordinate)
+hit_coords = [coord for coord in test_coordinates1 if test_coordinates1.index(coord)%2 == 0]
+for coord in hit_coords:
+    test_player.battlefield.grid[coord] = test_player.battlefield.states[7]
+test_computer.hit_coordinates = hit_coords
+test_computer.targetted_coordinates = hit_coords
+test_computer.active_targets = hit_coords
+test_player.battlefield.display_wrapped()
+
+
+print("Coordinate Options: ")
+print(test_computer.target_options(test_player))
 
 #=================================================================================================================
