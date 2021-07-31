@@ -109,8 +109,8 @@ class object_strings:
     gen_coords_input2_str_addon = "Enter the *NUMBER* corresponding to the coordinates option of your choice : "
     target_complete = "We've fired our missles to target!"
     incoming_complete = "Enemy missles have landed!"
-    ship_hit_str = "Ship hit at target!"
-    empty_waters_str = "Empty waters hit. No ships at target."
+    ship_hit_str = "Target at {} - Ship hit at target!"
+    empty_waters_str = "Empty waters hit. Target at {}. No ships at target."
 
 #textwrap.dedent(place_ships_str)
 

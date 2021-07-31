@@ -1,13 +1,13 @@
-import string
+# import string
 import Battlefield_Objects as obj
 import Battlefield_Strings as strings
-import random
+# import random
 
 NL ="\n"
 strings.intro_str()
 player2 = obj.Computer()
 player1 = obj.Player()
-print(NL + strings.ready_str + NL)
+print(strings.line_str2 + NL + strings.ready_str + NL)
 player1.battlefield.display()
 input(strings.continue_str)
 

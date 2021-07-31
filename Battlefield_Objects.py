@@ -1,5 +1,5 @@
 import string
-from Battlefield_Strings import line_str1, NL, object_strings as obj_str
+from Battlefield_Strings import line_str1, NL, continue_str, object_strings as obj_str
 import random
 
 class Battlefield:
@@ -328,17 +328,17 @@ class Player:
                 grid[coordinate] = Battlefield.states[6]
                 print(NL*2 + obj_str.target_complete + NL)
                 battlefiled.display()
-                print(NL*2 + obj_str.empty_waters_str)
+                print(NL*2 + obj_str.empty_waters_str.format(str(coordinate)))
                 shot += 1
                 last_shot_hit = False
             elif grid[coordinate] == Battlefield.states[5]:
                 grid[coordinate] = Battlefield.states[7]
                 print(NL*2 + obj_str.target_complete + NL)
                 battlefiled.display()
-                print(NL*2 + obj_str.ship_hit_str)
+                print(NL*2 + obj_str.ship_hit_str.format(str(coordinate)))
                 last_shot_hit = True
                 shot += 1
-                for ship in self.fleet.values():
+                for ship in player.fleet.values():
                     ship.check_sunk()
 
 class Computer(Player):
@@ -507,6 +507,7 @@ class Computer(Player):
             grid = player.battlefield.grid
             rows = battlefiled.rows
             battlefiled.display_wrapped()
+            input(continue_str)
             while True:
                 try:
                     if not self.active_targets:
@@ -524,14 +525,14 @@ class Computer(Player):
                 grid[coordinate] = Battlefield.states[6]
                 print(NL*2 + obj_str.incoming_complete + NL)
                 battlefiled.display()
-                print(NL*2 + obj_str.empty_waters_str)
+                print(NL*2 + obj_str.empty_waters_str.format(str(coordinate)))
                 shot += 1
                 last_shot_hit = False
             elif grid[coordinate] == Battlefield.states[5]:
                 grid[coordinate] = Battlefield.states[7]
                 print(NL*2 + obj_str.incoming_complete + NL)
                 battlefiled.display()
-                print(NL*2 + obj_str.ship_hit_str)
+                print(NL*2 + obj_str.ship_hit_str.format(str(coordinate)))
                 last_shot_hit = True
                 shot += 1
                 self.hit_coordinates.append(coordinate)
@@ -541,7 +542,7 @@ class Computer(Player):
                         ship.check_sunk()
                         if ship.sunk:
                             for coord in ship.coordinates:
-                                self.active_targets.pop(coord)
+                                self.active_targets.remove(coord)
 
 class InputException(Exception):
     """
@@ -564,33 +565,33 @@ class NotEnoughRoomException(Exception):
     """ 
 #=================================================================================================================
 #Test_Zone:
-test_player = Player()
-test_computer = Computer()
-test_player.battlefield.display_wrapped()
-test_coordinates1 = []
-for ship in test_player.fleet.values():
-    for coordinate in ship.coordinates:
-        test_coordinates1.append(coordinate)
-hit_coords = [coord for coord in test_coordinates1 if test_coordinates1.index(coord)%2 == 0]
-hit_coords.extend([list(test_player.fleet.values())[0].coordinates[1], list(test_player.fleet.values())[1].coordinates[1]])
-for coord in hit_coords:
-    test_player.battlefield.grid[coord] = test_player.battlefield.states[7]
-test_computer.hit_coordinates = hit_coords
-test_computer.targetted_coordinates = hit_coords
-test_computer.active_targets = hit_coords
-test_player.battlefield.display_wrapped()
+# test_player = Player()
+# test_computer = Computer()
+# test_player.battlefield.display_wrapped()
+# test_coordinates1 = []
+# for ship in test_player.fleet.values():
+#     for coordinate in ship.coordinates:
+#         test_coordinates1.append(coordinate)
+# hit_coords = [coord for coord in test_coordinates1 if test_coordinates1.index(coord)%2 == 0]
+# hit_coords.extend([list(test_player.fleet.values())[0].coordinates[1], list(test_player.fleet.values())[1].coordinates[1]])
+# for coord in hit_coords:
+#     test_player.battlefield.grid[coord] = test_player.battlefield.states[7]
+# test_computer.hit_coordinates = hit_coords
+# test_computer.targetted_coordinates = hit_coords
+# test_computer.active_targets = hit_coords
+# test_player.battlefield.display_wrapped()
 
-print(NL + "targetted_coordinates: " + NL)
-print(test_computer.targetted_coordinates)
-print(NL + "active_targets: " + NL)
-print(test_computer.active_targets)
-print(NL + "hit_coordinates: " + NL)
-print(test_computer.hit_coordinates)
-print(NL + "target_options: " + NL)
-print(test_computer.target_options(test_player))
+# print(NL + "targetted_coordinates: " + NL)
+# print(test_computer.targetted_coordinates)
+# print(NL + "active_targets: " + NL)
+# print(test_computer.active_targets)
+# print(NL + "hit_coordinates: " + NL)
+# print(test_computer.hit_coordinates)
+# print(NL + "target_options: " + NL)
+# print(test_computer.target_options(test_player))
 
-for coord in test_computer.target_options(test_player):
-    test_player.battlefield.grid[coord] = test_player.battlefield.states[8]
-test_player.battlefield.display_wrapped()
+# for coord in test_computer.target_options(test_player):
+#     test_player.battlefield.grid[coord] = test_player.battlefield.states[8]
+# test_player.battlefield.display_wrapped()
 
 #=================================================================================================================
