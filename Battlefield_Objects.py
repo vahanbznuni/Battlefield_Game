@@ -64,7 +64,7 @@ class Battlefield:
     def get_column(self, coordinate):
         column = []
         for row in self.rows:
-            column.append(row, coordinate[-1])
+            column.append((row, coordinate[-1]))
         return column
 
     def coord_up(self, coordinate):
@@ -359,61 +359,145 @@ class Computer(Player):
         battlefiled = player.battlefield
         target_options = []
         if self.active_targets:
-            for coordinate in self.active_targets: 
-                options = []
-                if battlefiled.coord_up(coordinate):
-                    coord_up = battlefiled.coord_up(coordinate)
-                else:
-                    coord_up = None
-                if battlefiled.coord_down(coordinate):
-                    coord_down = battlefiled.coord_down(coordinate)
-                else:
-                    coord_down = None
-                if battlefiled.coord_left(coordinate):
-                    coord_left = battlefiled.coord_left(coordinate)
-                else:
-                    coord_left = None
-                if battlefiled.coord_right(coordinate):
-                    coord_right = battlefiled.coord_right(coordinate)
-                else:
-                    coord_right = None
-                if coord_up:
-                    if coord_up in self.hit_coordinates:
+            options = []
+            for coordinate in self.active_targets:
+                row = battlefiled.get_row(coordinate)
+                column = battlefiled.get_column(coordinate)
+                targets_in_row = [target for target in self.active_targets if target in row]
+                targets_in_column = [target for target in self.active_targets if target in column]
+                if len(targets_in_row) > 1:
+                    target_columns = [target[-1] for target in targets_in_row]
+                    target_columns.sort()
+                    if target_columns.index(coordinate[-1]) < len(target_columns) - 1:
+                        row_options = []
+                        current_coord = coordinate
+                        index_difference = target_columns[target_columns.index(coordinate[-1]) + 1] - \
+                            target_columns[target_columns.index(coordinate[-1])]
+                        seperation = index_difference - 1
+                        if seperation >= 1:
+                            for num in range(seperation):
+                                next_coord = battlefiled.coord_right(current_coord)
+                                if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
+                                    row_options = None
+                                    break
+                                elif next_coord not in self.targetted_coordinates:
+                                    row_options.append(next_coord)
+                                current_coord = next_coord
+                            options.extend([option for option in row_options if option not in options])    
+                if len(targets_in_column) > 1:
+                    target_row_indices = [battlefiled.row_index(target) for target in targets_in_column]
+                    target_row_indices.sort()
+                    if target_row_indices.index(battlefiled.row_index(coordinate[0])) < len(target_row_indices) - 1:
+                        column_options = []
+                        current_coord = coordinate
+                        index_difference = target_row_indices[target_row_indices.index(battlefiled.row_index(coordinate[0])) + 1] - \
+                            target_row_indices[target_row_indices.index(battlefiled.row_index(coordinate[0]))]
+                        seperation = index_difference - 1
+                        if seperation >= 1:
+                            for num in range(seperation):
+                                next_coord = battlefiled.coord_down(current_coord)
+                                if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
+                                    column_options = None
+                                    break
+                                elif next_coord not in self.targetted_coordinates:
+                                    column_options.append(next_coord)
+                                current_coord = next_coord
+                            options.extend([option for option in column_options if option not in options])
+            if options:
+                target_options.extend([option for option in options if option not in target_options])
+                print("RESULT 1")
+                return target_options
+            else: 
+                for coordinate in self.active_targets:
+                    if battlefiled.coord_up(coordinate):
+                        coord_up = battlefiled.coord_up(coordinate)
+                    else:
+                        coord_up = None
+                    if battlefiled.coord_down(coordinate):
+                        coord_down = battlefiled.coord_down(coordinate)
+                    else:
+                        coord_down = None
+                    if battlefiled.coord_left(coordinate):
+                        coord_left = battlefiled.coord_left(coordinate)
+                    else:
+                        coord_left = None
+                    if battlefiled.coord_right(coordinate):
+                        coord_right = battlefiled.coord_right(coordinate)
+                    else:
+                        coord_right = None
+                    if coord_up:
+                        current_coord = coordinate
+                        if coord_up in self.hit_coordinates:
+                            for num in range(battlefiled.rows.index(coordinate[0])):
+                                next_coord = battlefiled.coord_up(current_coord)
+                                if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
+                                    break
+                                elif next_coord not in self.targetted_coordinates and next_coord not in options:
+                                    options.append(next_coord)
+                                    break
+                                else:
+                                    pass
+                                current_coord = next_coord
+                    if coord_down:
+                        current_coord = coordinate
+                        if coord_down in self.hit_coordinates:
+                            for num in range(len(battlefiled.rows) - battlefiled.rows.index(coordinate[0])):
+                                next_coord = battlefiled.coord_down(current_coord)
+                                if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
+                                    break
+                                elif next_coord not in self.targetted_coordinates and next_coord not in options:
+                                    options.append(next_coord)
+                                    break
+                                else:
+                                    pass
+                                current_coord = next_coord
+                    if coord_left:
+                        current_coord = coordinate
+                        if coord_left in self.hit_coordinates:
+                            for num in range(coordinate[-1]):
+                                next_coord = battlefiled.coord_left(current_coord)
+                                if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
+                                    break
+                                elif next_coord not in self.targetted_coordinates and next_coord not in options:
+                                    options.append(next_coord)
+                                    break
+                                else:
+                                    pass
+                                current_coord = next_coord
+                    if coord_right:
+                        current_coord = coordinate
+                        if coord_right in self.hit_coordinates:
+                            for num in range(len(battlefiled.columns) - coordinate[-1]):
+                                next_coord = battlefiled.coord_right(current_coord)
+                                if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
+                                    break
+                                elif next_coord not in self.targetted_coordinates and next_coord not in options:
+                                    options.append(next_coord)
+                                    break
+                                else:
+                                    pass
+                                current_coord = next_coord
+                if options:
+                    target_options.extend([option for option in options if option not in target_options])
+                    print("RESULT 2")
+                    return target_options
+                else:    
+                    for coordinate in self.active_targets:
+                        if coord_up:
+                            if coord_up not in self.targetted_coordinates and coord_up not in target_options:
+                                options.append(coord_up)
                         if coord_down:
                             if coord_down not in self.targetted_coordinates and coord_down not in target_options:
                                 options.append(coord_down)
-                            elif coord_down in self.hit_coordinates:
-                                pass
-                if coord_down:
-                    if coord_down in self.hit_coordinates:
-                        if coord_up:
-                            if coord_up not in self.targetted_coordinates and coord_up not in target_options:
-                                target_options.append(coord_up)
-                if coord_left:
-                    if coord_left in self.hit_coordinates:
-                        if coord_right:
-                            if coord_right not in self.targetted_coordinates and coord_right not in target_options:
-                                target_options.append(coord_right)
-                if coord_right:
-                    if coord_right in self.hit_coordinates:
                         if coord_left:
                             if coord_left not in self.targetted_coordinates and coord_left not in target_options:
-                                target_options.append(coord_left)
-                if not options:
-                    if coord_up:
-                        if coord_up not in self.targetted_coordinates and coord_up not in target_options:
-                            options.append(coord_up)
-                    if coord_down:
-                        if coord_down not in self.targetted_coordinates and coord_down not in target_options:
-                            options.append(coord_down)
-                    if coord_left:
-                        if coord_left not in self.targetted_coordinates and coord_left not in target_options:
-                            options.append(coord_left)
-                    if coord_right:
-                        if coord_right not in self.targetted_coordinates and coord_right not in target_options:
-                            options.append(coord_right)
-                target_options.extend(option for option in options if option not in target_options)
-        return target_options
+                                options.append(coord_left)
+                        if coord_right:
+                            if coord_right not in self.targetted_coordinates and coord_right not in target_options:
+                                options.append(coord_right)
+                    target_options.extend([option for option in options if option not in target_options])
+                    print("RESULT 3")
+                    return target_options
 
     def target(self, player):
         shot = 0
