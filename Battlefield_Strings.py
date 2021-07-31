@@ -91,6 +91,8 @@ enemy_battlefield_str = "Enemy Battlefield: "
 incoming_str = "Now it's the Enemy's turn to target your Battlefield. Brace for impact!"
 player_battlefield_str = "Your Battlefield: "
 
+battlefield_str = "{} Battlefield: "
+
 winner_str_raw = "{} HAS WON!!!"
 winner_str = textwrap.dedent(line_wrap3(winner_str_raw))
 final_str_raw = "THANK YOU FOR PLAYING!"
@@ -109,7 +111,7 @@ class object_strings:
     gen_coords_input2_str_addon = "Enter the *NUMBER* corresponding to the coordinates option of your choice : "
     target_complete = "We've fired our missles to target!"
     incoming_complete = "Enemy missles have landed!"
-    ship_hit_str = "Target at {} - Ship hit at target!"
+    ship_hit_str = "Target at {} - Ship hit at target!!!"
     empty_waters_str = "Empty waters hit. Target at {}. No ships at target."
 
 #textwrap.dedent(place_ships_str)

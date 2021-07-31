@@ -11,7 +11,7 @@ print(strings.line_str2 + NL + strings.ready_str + NL)
 player1.battlefield.display()
 input(strings.continue_str)
 
-def check_winnter():
+def check_winner():
     if player1.check_fleet_sunk():
         winner = player2
     elif player2.check_fleet_sunk():
@@ -20,19 +20,19 @@ def check_winnter():
         winner = None
     return winner
 
-while not check_winnter():    
-    print(NL*2 + strings.target_str)
+while not check_winner():    
+    print(strings.line_str2 + NL*2 + strings.target_str)
     input(strings.continue_str)
     player1.target(player2)
-    check_winnter()
-    if check_winnter():
-        print(strings.winner_str.format(check_winnter()))
+    check_winner()
+    if check_winner():
+        print(strings.winner_str.format(check_winner()))
     else:
-        print(NL*2 + strings.incoming_str)
+        print(strings.line_str2 + NL*2 + strings.incoming_str)
         input(strings.continue_str)
         player2.target(player1)
-        if check_winnter():
-            print(strings.winner_str.format(check_winnter()))
+        if check_winner():
+            print(strings.winner_str.format(check_winner()))
         else:
             input(strings.continue_str)  
     

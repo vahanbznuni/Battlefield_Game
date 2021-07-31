@@ -1,5 +1,6 @@
 import string
-from Battlefield_Strings import line_str1, NL, continue_str, object_strings as obj_str
+from Battlefield_Strings import line_str1, NL, continue_str, line_wrap3, object_strings as obj_str, \
+    battlefield_str
 import random
 
 class Battlefield:
@@ -42,8 +43,10 @@ class Battlefield:
                         row.append("[#]")                      
             print(row_name + " " + "".join(row))
    
-    def display_wrapped(self):
+    def display_wrapped(self, string):
         print(line_str1)
+        print(NL)
+        print(battlefield_str.format(string))
         print(NL)
         self.display()
         print(NL)
@@ -133,7 +136,7 @@ class Battlefield:
         return {key: value for (key, value) in options.items() if value != None}
     
     def gen_coords(self, ship_type):
-        self.display_wrapped()
+        self.display_wrapped("Your")
         ship_size = Ship.types[ship_type]
         coordinates = []
         input_str = obj_str.gen_coords_input1_str
@@ -273,7 +276,7 @@ class Ship:
             self.sunk = True
             for coordinate in self.coordinates:
                 battlefield.grid[coordinate] = Battlefield.states[9]
-            print(NL*2 + self.type + " HAS BEEN SUNK!!!")
+            print(NL*2 + line_wrap3(self.type + " HAS BEEN SUNK!!!!") + NL*2)
    
 class Player:
     player_count = 0
@@ -307,7 +310,7 @@ class Player:
             battlefiled = player.battlefield
             grid = player.battlefield.grid
             while True:
-                battlefiled.display_wrapped()
+                battlefiled.display_wrapped("Enemy")
                 error_str = obj_str.error_str
                 try:
                     input1 = (input(obj_str.target_cords_str))
@@ -328,14 +331,14 @@ class Player:
                 grid[coordinate] = Battlefield.states[6]
                 print(NL*2 + obj_str.target_complete + NL)
                 battlefiled.display()
-                print(NL*2 + obj_str.empty_waters_str.format(str(coordinate)))
+                print(NL*2 + obj_str.empty_waters_str.format(str(coordinate)) + NL*2)
                 shot += 1
                 last_shot_hit = False
             elif grid[coordinate] == Battlefield.states[5]:
                 grid[coordinate] = Battlefield.states[7]
                 print(NL*2 + obj_str.target_complete + NL)
                 battlefiled.display()
-                print(NL*2 + obj_str.ship_hit_str.format(str(coordinate)))
+                print(NL*2 + line_wrap3(obj_str.ship_hit_str.format(str(coordinate))) + NL*2)
                 last_shot_hit = True
                 shot += 1
                 for ship in player.fleet.values():
@@ -506,7 +509,7 @@ class Computer(Player):
             battlefiled = player.battlefield
             grid = player.battlefield.grid
             rows = battlefiled.rows
-            battlefiled.display_wrapped()
+            battlefiled.display_wrapped("Your")
             input(continue_str)
             while True:
                 try:
@@ -525,14 +528,14 @@ class Computer(Player):
                 grid[coordinate] = Battlefield.states[6]
                 print(NL*2 + obj_str.incoming_complete + NL)
                 battlefiled.display()
-                print(NL*2 + obj_str.empty_waters_str.format(str(coordinate)))
+                print(NL*2 + obj_str.empty_waters_str.format(str(coordinate)) + NL*2)
                 shot += 1
                 last_shot_hit = False
             elif grid[coordinate] == Battlefield.states[5]:
                 grid[coordinate] = Battlefield.states[7]
                 print(NL*2 + obj_str.incoming_complete + NL)
                 battlefiled.display()
-                print(NL*2 + obj_str.ship_hit_str.format(str(coordinate)))
+                print(NL*2 + line_wrap3(obj_str.ship_hit_str.format(str(coordinate))) + NL*2)
                 last_shot_hit = True
                 shot += 1
                 self.hit_coordinates.append(coordinate)
