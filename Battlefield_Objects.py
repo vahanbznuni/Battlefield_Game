@@ -1,6 +1,6 @@
 import string
-from Battlefield_Strings import line_str1, NL, continue_str, line_wrap3, object_strings as obj_str, \
-    battlefield_str
+from Battlefield_Strings import line_str1, line_str2, NL, continue_str, line_wrap3, object_strings as obj_str, \
+    battlefield_str, ready_str, target_str, incoming_str
 import random
 
 class Battlefield:
@@ -343,6 +343,9 @@ class Player:
                 shot += 1
                 for ship in player.fleet.values():
                     ship.check_sunk()
+                input(continue_str)
+                print(line_str2 + NL*2 + target_str)
+                input(continue_str)
 
 class Computer(Player):
     def __init__(self):
@@ -546,6 +549,9 @@ class Computer(Player):
                         if ship.sunk:
                             for coord in ship.coordinates:
                                 self.active_targets.remove(coord)
+                input(continue_str)
+                print(line_str2 + NL*2 + incoming_str)
+                input(continue_str)
 
 class InputException(Exception):
     """

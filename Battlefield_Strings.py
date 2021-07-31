@@ -30,7 +30,7 @@ continue_str = "\n\n>>>Please press ENTER key to continue<<<"
 game_desc_str1 = \
 """\n\nThis Battlefield game is a Python Terminal version of the classic 'Battlefield' game. 
 In this version, you (player 1) are playing against the computer.
-Each player (in this case you and the computer) has their own Battlefield
+Each player (in this case you (player1) and the computer (player 2)) has their own Battlefield
 of 10 x 10 squares (coordinates), and 5 ships of different lengths."""
 game_desc_str2 = \
     """\n\nThis is what a sample Battlefield looks like:

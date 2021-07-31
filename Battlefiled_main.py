@@ -7,7 +7,7 @@ NL ="\n"
 strings.intro_str()
 player2 = obj.Computer()
 player1 = obj.Player()
-print(strings.line_str2 + NL + strings.ready_str + NL)
+print(strings.line_str2 + NL*2 + strings.ready_str + NL)
 player1.battlefield.display()
 input(strings.continue_str)
 
@@ -28,12 +28,13 @@ while not check_winner():
     if check_winner():
         print(strings.winner_str.format(check_winner()))
     else:
+        input(strings.continue_str)
         print(strings.line_str2 + NL*2 + strings.incoming_str)
         input(strings.continue_str)
         player2.target(player1)
         if check_winner():
-            print(strings.winner_str.format(check_winner()))
+            print(NL*2 + strings.winner_str.format(check_winner()))
         else:
             input(strings.continue_str)  
     
-print(strings.final_str)
+print(NL*2 + strings.final_str)
