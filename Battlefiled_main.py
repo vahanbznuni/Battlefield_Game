@@ -3,14 +3,6 @@ import Battlefield_Objects as obj
 import Battlefield_Strings as strings
 # import random
 
-NL ="\n"
-strings.intro_str()
-player1 = obj.Player()
-player2 = obj.Computer()
-print(strings.line_str2 + NL*2 + strings.ready_str + NL)
-player1.battlefield.display()
-input(strings.continue_str)
-
 def check_winner():
     if player1.check_fleet_sunk():
         winner = player2
@@ -19,6 +11,14 @@ def check_winner():
     else:
         winner = None
     return winner
+
+NL ="\n"
+strings.intro_str()
+player1 = obj.Player()
+player2 = obj.Computer()
+print(strings.line_str2 + NL*2 + strings.ready_str + NL)
+player1.battlefield.display()
+input(strings.continue_str)
 
 while not check_winner():    
     print(strings.line_str2 + NL*2 + strings.target_str)
