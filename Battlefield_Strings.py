@@ -113,6 +113,8 @@ class object_strings:
     incoming_complete = "Enemy missles have landed!"
     ship_hit_str = "Target at {} - Ship hit at target!!!"
     empty_waters_str = "Empty waters hit. Target at {}. No ships at target."
+    display_ships_intro = "The following are {} ships:"
+    display_ships_str_main = "{}. {}\t\t{}"
 
 #textwrap.dedent(place_ships_str)
 

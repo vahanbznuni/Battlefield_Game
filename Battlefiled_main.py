@@ -5,8 +5,8 @@ import Battlefield_Strings as strings
 
 NL ="\n"
 strings.intro_str()
-player2 = obj.Computer()
 player1 = obj.Player()
+player2 = obj.Computer()
 print(strings.line_str2 + NL*2 + strings.ready_str + NL)
 player1.battlefield.display()
 input(strings.continue_str)

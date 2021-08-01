@@ -302,6 +302,20 @@ class Player:
         if sunk_ships == len(self.fleet):
             self.fleet_sunk = True
         return self.fleet_sunk
+    
+    def display_ships(self):
+        if self.id == 1:
+            player_str = "YOUR"
+        elif self.id == 2:
+            player_str = "ENEMY"
+        ships = [ship for ship in self.fleet.values() if not ship.sunk]
+        print(NL + line_str1 + NL)
+        print(obj_str.display_ships_intro.format(player_str))
+        num = 1
+        for ship in ships:
+            print(obj_str.display_ships_str_main.format(num, ship.type, "+"*ship.size), end="\n")
+            num += 1
+        print(NL)
 
     def target(self, player):
         shot = 0
@@ -310,6 +324,8 @@ class Player:
             battlefiled = player.battlefield
             grid = player.battlefield.grid
             while True:
+                player.display_ships()
+                input(continue_str)
                 battlefiled.display_wrapped("Enemy")
                 error_str = obj_str.error_str
                 try:
@@ -512,6 +528,8 @@ class Computer(Player):
             battlefiled = player.battlefield
             grid = player.battlefield.grid
             rows = battlefiled.rows
+            player.display_ships()
+            input(continue_str)
             battlefiled.display_wrapped("Your")
             input(continue_str)
             while True:
