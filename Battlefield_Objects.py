@@ -321,9 +321,6 @@ class Player:
         shot = 0
         last_shot_hit = False
         while shot < 1 or last_shot_hit:
-            from Battlefiled_main import check_winner
-            if check_winner():
-                break
             battlefiled = player.battlefield
             grid = player.battlefield.grid
             while True:
@@ -430,6 +427,7 @@ class Computer(Player):
                             options.extend([option for option in column_options if option not in options])
             if options:
                 target_options.extend([option for option in options if option not in target_options])
+                print("RESULT 1")
                 return target_options
             else: 
                 for coordinate in self.active_targets:
@@ -520,15 +518,13 @@ class Computer(Player):
                             if coord_right not in self.targetted_coordinates and coord_right not in target_options:
                                 options.append(coord_right)
                     target_options.extend([option for option in options if option not in target_options])
+                    print("RESULT 3")
                     return target_options
 
     def target(self, player):
         shot = 0
         last_shot_hit = False
         while shot < 1 or last_shot_hit:
-            from Battlefiled_main import check_winner
-            if check_winner():
-                break
             battlefiled = player.battlefield
             grid = player.battlefield.grid
             rows = battlefiled.rows
