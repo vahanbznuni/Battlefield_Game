@@ -358,7 +358,10 @@ class Player:
                 last_shot_hit = True
                 shot += 1
                 for ship in player.fleet.values():
-                    ship.check_sunk()
+                    if coordinate in ship.coordinates:
+                        ship.check_sunk()
+                if player.check_fleet_sunk():
+                    break
                 input(continue_str)
                 print(line_str2 + NL*2 + target_str)
                 input(continue_str)
@@ -567,6 +570,8 @@ class Computer(Player):
                         if ship.sunk:
                             for coord in ship.coordinates:
                                 self.active_targets.remove(coord)
+                if player.check_fleet_sunk():
+                    break
                 input(continue_str)
                 print(line_str2 + NL*2 + incoming_str)
                 input(continue_str)
