@@ -1,15 +1,15 @@
 Notes
 
-Add algorhythm for computer to be able to do "smart" targetting
-    Use Coord_Options logic
-Add Turn management (if target hit)
-Add/Correct "Ship Sunk!" Statement
-Add Targeted Corrdinate after target result statement
-Exception Handling for Main inputs
-Revise Visuals & Strings
+✔ Add algorhythm for computer to be able to do "smart" targetting
+    ~✔ Use Coord_Options logic
+✔ Add Turn management (if target hit)
+✔ Add/Correct "Ship Sunk!" Statement
+✔ Add Targeted Corrdinate after target result statement
+✔ Exception Handling for Main inputs
+~✔ Revise Visuals & Strings
 
-Debug (if needed)
-Maybe move computer-to-player targetting functionality into Objects Module (via Target func)
+✔ Debug (if needed)
+✔ Maybe move computer-to-player targetting functionality into Objects Module (via Target func)
 
 
 
