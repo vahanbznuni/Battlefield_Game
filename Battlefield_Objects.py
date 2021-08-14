@@ -546,7 +546,7 @@ class Computer(Player):
                         raise BusyCoordinateException
                     break
                 except Exception:
-                    pass
+                    print(Exception)
             self.targetted_coordinates.append(coordinate)
             if not grid[coordinate]:
                 grid[coordinate] = Battlefield.states[6]

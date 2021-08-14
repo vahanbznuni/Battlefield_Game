@@ -1,5 +1,9 @@
 Notes
 
+Figure out why Computer target goes one over at the end
+
+=========================
+
 ✔ Add algorhythm for computer to be able to do "smart" targetting
     ~✔ Use Coord_Options logic
 ✔ Add Turn management (if target hit)
