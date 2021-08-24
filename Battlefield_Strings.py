@@ -97,6 +97,7 @@ winner_str_raw = "{} HAS WON!!!"
 winner_str = textwrap.dedent(line_wrap3(winner_str_raw))
 final_str_raw = "THANK YOU FOR PLAYING!"
 final_str = NL + textwrap.dedent(line_wrap1(final_str_raw))
+final_str2 = "\n\n>>>Please press ENTER key to Exit<<<"
 
 class object_strings:
     error_str = NL*2 + "INCORRECT INPUT! \n{} Please try again!"

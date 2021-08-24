@@ -38,3 +38,4 @@ while not check_winner():
             input(strings.continue_str)  
     
 print(NL*2 + strings.final_str)
+input(strings.final_str2)
