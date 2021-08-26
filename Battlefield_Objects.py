@@ -141,7 +141,7 @@ class Battlefield:
         coordinates = []
         input_str = obj_str.gen_coords_input1_str
         input1 = input(input_str.format("starting", str(ship_type), ship_size*"+"))
-        start_coordinate = (input1[0], int(input1[1:]))
+        start_coordinate = (input1[0].upper(), int(input1[1:]))
         if self.grid[start_coordinate] == Battlefield.states[5]:
             raise BusyCoordinateException
         else:
@@ -330,7 +330,7 @@ class Player:
                 error_str = obj_str.error_str
                 try:
                     input1 = (input(obj_str.target_cords_str))
-                    coordinate = (input1[0], int(input1[1:]))
+                    coordinate = (input1[0].upper(), int(input1[1:]))
                     if grid[coordinate] == Battlefield.states[6] or grid[coordinate] == Battlefield.states[7]\
                         or grid[coordinate] == Battlefield.states[9]:
                         raise TargettedCoordinateException
