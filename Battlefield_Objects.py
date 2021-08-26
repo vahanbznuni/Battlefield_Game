@@ -523,39 +523,6 @@ class Computer(Player):
                     target_options.extend([option for option in options if option not in target_options])
                     print("RESULT 3")
                     return target_options
-        # else:
-        #     rows = battlefield.rows
-        #     columns = battlefield.columns
-        #     coordinate = (rows[random.randint(0, len(rows)-1)], random.randint(1, len(columns)))
-        #     if battlefield.coord_up(coordinate):
-        #         coord_up = battlefield.coord_up(coordinate)
-        #     else:
-        #         coord_up = None
-        #     if battlefield.coord_down(coordinate):
-        #         coord_down = battlefield.coord_down(coordinate)
-        #     else:
-        #         coord_down = None
-        #     if battlefield.coord_left(coordinate):
-        #         coord_left = battlefield.coord_left(coordinate)
-        #     else:
-        #         coord_left = None
-        #     if battlefield.coord_right(coordinate):
-        #         coord_right = battlefield.coord_right(coordinate)
-        #     else:
-        #         coord_right = None
-        #     if coord_up:
-        #         if not Battlefield.states[coord_up]:
-        #             current_coord = coordinate
-        #             next_coord = battlefield.coord_up(current_coord)
-        #             while not Battlefield.states[next_coord]:
-        #                 current_coord = next_coord
-        #             next_coord = battlefield.coord_down(current_coord)                        
-        #     if coord_down:
-        #         pass
-        #     if coord_left:
-        #         pass
-        #     if coord_right:
-        #         pass
 
     def target(self, player):
         shot = 0
