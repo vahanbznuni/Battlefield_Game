@@ -321,12 +321,12 @@ class Player:
         shot = 0
         last_shot_hit = False
         while shot < 1 or last_shot_hit:
-            battlefiled = player.battlefield
+            battlefield = player.battlefield
             grid = player.battlefield.grid
             while True:
                 player.display_ships()
                 input(continue_str)
-                battlefiled.display_wrapped("Enemy")
+                battlefield.display_wrapped("Enemy")
                 error_str = obj_str.error_str
                 try:
                     input1 = (input(obj_str.target_cords_str))
@@ -346,14 +346,14 @@ class Player:
             if not grid[coordinate]:
                 grid[coordinate] = Battlefield.states[6]
                 print(NL*2 + obj_str.target_complete + NL)
-                battlefiled.display()
+                battlefield.display()
                 print(NL*2 + obj_str.empty_waters_str.format(str(coordinate)) + NL*2)
                 shot += 1
                 last_shot_hit = False
             elif grid[coordinate] == Battlefield.states[5]:
                 grid[coordinate] = Battlefield.states[7]
                 print(NL*2 + obj_str.target_complete + NL)
-                battlefiled.display()
+                battlefield.display()
                 print(NL*2 + line_wrap3(obj_str.ship_hit_str.format(str(coordinate))) + NL*2)
                 last_shot_hit = True
                 shot += 1
@@ -381,13 +381,13 @@ class Computer(Player):
         return "Computer"
     
     def target_options(self, player):
-        battlefiled = player.battlefield
+        battlefield = player.battlefield
         target_options = []
         if self.active_targets:
             options = []
             for coordinate in self.active_targets:
-                row = battlefiled.get_row(coordinate)
-                column = battlefiled.get_column(coordinate)
+                row = battlefield.get_row(coordinate)
+                column = battlefield.get_column(coordinate)
                 targets_in_row = [target for target in self.active_targets if target in row]
                 targets_in_column = [target for target in self.active_targets if target in column]
                 if len(targets_in_row) > 1:
@@ -401,7 +401,7 @@ class Computer(Player):
                         seperation = index_difference - 1
                         if seperation >= 1:
                             for num in range(seperation):
-                                next_coord = battlefiled.coord_right(current_coord)
+                                next_coord = battlefield.coord_right(current_coord)
                                 if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
                                     row_options = None
                                     break
@@ -410,17 +410,17 @@ class Computer(Player):
                                 current_coord = next_coord
                             options.extend([option for option in row_options if option not in options])    
                 if len(targets_in_column) > 1:
-                    target_row_indices = [battlefiled.row_index(target) for target in targets_in_column]
+                    target_row_indices = [battlefield.row_index(target) for target in targets_in_column]
                     target_row_indices.sort()
-                    if target_row_indices.index(battlefiled.row_index(coordinate[0])) < len(target_row_indices) - 1:
+                    if target_row_indices.index(battlefield.row_index(coordinate[0])) < len(target_row_indices) - 1:
                         column_options = []
                         current_coord = coordinate
-                        index_difference = target_row_indices[target_row_indices.index(battlefiled.row_index(coordinate[0])) + 1] - \
-                            target_row_indices[target_row_indices.index(battlefiled.row_index(coordinate[0]))]
+                        index_difference = target_row_indices[target_row_indices.index(battlefield.row_index(coordinate[0])) + 1] - \
+                            target_row_indices[target_row_indices.index(battlefield.row_index(coordinate[0]))]
                         seperation = index_difference - 1
                         if seperation >= 1:
                             for num in range(seperation):
-                                next_coord = battlefiled.coord_down(current_coord)
+                                next_coord = battlefield.coord_down(current_coord)
                                 if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
                                     column_options = None
                                     break
@@ -434,27 +434,27 @@ class Computer(Player):
                 return target_options
             else: 
                 for coordinate in self.active_targets:
-                    if battlefiled.coord_up(coordinate):
-                        coord_up = battlefiled.coord_up(coordinate)
+                    if battlefield.coord_up(coordinate):
+                        coord_up = battlefield.coord_up(coordinate)
                     else:
                         coord_up = None
-                    if battlefiled.coord_down(coordinate):
-                        coord_down = battlefiled.coord_down(coordinate)
+                    if battlefield.coord_down(coordinate):
+                        coord_down = battlefield.coord_down(coordinate)
                     else:
                         coord_down = None
-                    if battlefiled.coord_left(coordinate):
-                        coord_left = battlefiled.coord_left(coordinate)
+                    if battlefield.coord_left(coordinate):
+                        coord_left = battlefield.coord_left(coordinate)
                     else:
                         coord_left = None
-                    if battlefiled.coord_right(coordinate):
-                        coord_right = battlefiled.coord_right(coordinate)
+                    if battlefield.coord_right(coordinate):
+                        coord_right = battlefield.coord_right(coordinate)
                     else:
                         coord_right = None
                     if coord_up:
                         current_coord = coordinate
                         if coord_up in self.hit_coordinates:
-                            for num in range(battlefiled.rows.index(coordinate[0])):
-                                next_coord = battlefiled.coord_up(current_coord)
+                            for num in range(battlefield.rows.index(coordinate[0])):
+                                next_coord = battlefield.coord_up(current_coord)
                                 if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
                                     break
                                 elif next_coord not in self.targetted_coordinates and next_coord not in options:
@@ -466,8 +466,8 @@ class Computer(Player):
                     if coord_down:
                         current_coord = coordinate
                         if coord_down in self.hit_coordinates:
-                            for num in range(len(battlefiled.rows) - battlefiled.rows.index(coordinate[0])):
-                                next_coord = battlefiled.coord_down(current_coord)
+                            for num in range(len(battlefield.rows) - battlefield.rows.index(coordinate[0])):
+                                next_coord = battlefield.coord_down(current_coord)
                                 if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
                                     break
                                 elif next_coord not in self.targetted_coordinates and next_coord not in options:
@@ -480,7 +480,7 @@ class Computer(Player):
                         current_coord = coordinate
                         if coord_left in self.hit_coordinates:
                             for num in range(coordinate[-1]):
-                                next_coord = battlefiled.coord_left(current_coord)
+                                next_coord = battlefield.coord_left(current_coord)
                                 if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
                                     break
                                 elif next_coord not in self.targetted_coordinates and next_coord not in options:
@@ -492,8 +492,8 @@ class Computer(Player):
                     if coord_right:
                         current_coord = coordinate
                         if coord_right in self.hit_coordinates:
-                            for num in range(len(battlefiled.columns) - coordinate[-1]):
-                                next_coord = battlefiled.coord_right(current_coord)
+                            for num in range(len(battlefield.columns) - coordinate[-1]):
+                                next_coord = battlefield.coord_right(current_coord)
                                 if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
                                     break
                                 elif next_coord not in self.targetted_coordinates and next_coord not in options:
@@ -523,18 +523,53 @@ class Computer(Player):
                     target_options.extend([option for option in options if option not in target_options])
                     print("RESULT 3")
                     return target_options
+        # else:
+        #     rows = battlefield.rows
+        #     columns = battlefield.columns
+        #     coordinate = (rows[random.randint(0, len(rows)-1)], random.randint(1, len(columns)))
+        #     if battlefield.coord_up(coordinate):
+        #         coord_up = battlefield.coord_up(coordinate)
+        #     else:
+        #         coord_up = None
+        #     if battlefield.coord_down(coordinate):
+        #         coord_down = battlefield.coord_down(coordinate)
+        #     else:
+        #         coord_down = None
+        #     if battlefield.coord_left(coordinate):
+        #         coord_left = battlefield.coord_left(coordinate)
+        #     else:
+        #         coord_left = None
+        #     if battlefield.coord_right(coordinate):
+        #         coord_right = battlefield.coord_right(coordinate)
+        #     else:
+        #         coord_right = None
+        #     if coord_up:
+        #         if not Battlefield.states[coord_up]:
+        #             current_coord = coordinate
+        #             next_coord = battlefield.coord_up(current_coord)
+        #             while not Battlefield.states[next_coord]:
+        #                 current_coord = next_coord
+        #             next_coord = battlefield.coord_down(current_coord)
+
+                        
+            if coord_down:
+                pass
+            if coord_left:
+                pass
+            if coord_right:
+                pass
 
     def target(self, player):
         shot = 0
         last_shot_hit = False
         while shot < 1 or last_shot_hit:
-            battlefiled = player.battlefield
+            battlefield = player.battlefield
             grid = player.battlefield.grid
-            rows = battlefiled.rows
-            columns = battlefiled.columns
+            rows = battlefield.rows
+            columns = battlefield.columns
             player.display_ships()
             input(continue_str)
-            battlefiled.display_wrapped("Your")
+            battlefield.display_wrapped("Your")
             input(continue_str)
             while True:
                 try:
@@ -545,7 +580,7 @@ class Computer(Player):
                         coordinate = options[random.randint(0, len(options)-1)]
                     if grid[coordinate] == Battlefield.states[6] or grid[coordinate] == Battlefield.states[7]\
                         or grid[coordinate] == Battlefield.states[9]:
-                        raise TargettedCoordinateException
+                            raise TargettedCoordinateException
                     break
                 except Exception as e:
                     print(e)
@@ -553,14 +588,14 @@ class Computer(Player):
             if not grid[coordinate]:
                 grid[coordinate] = Battlefield.states[6]
                 print(NL*2 + obj_str.incoming_complete + NL)
-                battlefiled.display()
+                battlefield.display()
                 print(NL*2 + obj_str.empty_waters_str.format(str(coordinate)) + NL*2)
                 shot += 1
                 last_shot_hit = False
             elif grid[coordinate] == Battlefield.states[5]:
                 grid[coordinate] = Battlefield.states[7]
                 print(NL*2 + obj_str.incoming_complete + NL)
-                battlefiled.display()
+                battlefield.display()
                 print(NL*2 + line_wrap3(obj_str.ship_hit_str.format(str(coordinate))) + NL*2)
                 last_shot_hit = True
                 shot += 1
