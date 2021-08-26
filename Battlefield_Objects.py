@@ -214,7 +214,7 @@ class Battlefield:
 class ComputerBattlefield(Battlefield):
     def gen_coords(self, ship_type):
         coordinates = []
-        start_coordinate = (self.rows[random.randint(0, len(self.rows)-1)], random.randint(0, 10))
+        start_coordinate = (self.rows[random.randint(0, len(self.rows)-1)], random.randint(1, len(self.columns)))
         coordinates.append(start_coordinate)
         options = list(self.coord_opts(start_coordinate, ship_type).values())
         for coord in options[random.randint(0, len(options)-1)][1:]:
@@ -531,6 +531,7 @@ class Computer(Player):
             battlefiled = player.battlefield
             grid = player.battlefield.grid
             rows = battlefiled.rows
+            columns = battlefiled.columns
             player.display_ships()
             input(continue_str)
             battlefiled.display_wrapped("Your")
@@ -538,15 +539,16 @@ class Computer(Player):
             while True:
                 try:
                     if not self.active_targets:
-                        coordinate = (rows[random.randint(0, len(rows)-1)], random.randint(0, 10))
+                        coordinate = (rows[random.randint(0, len(rows)-1)], random.randint(1, len(columns)))
                     else:
                         options = self.target_options(player)
-                        coordinate = options[random.randint(0, len(options))]
-                    if grid[coordinate] == Battlefield.states[6] or grid[coordinate] == Battlefield.states[7]:
-                        raise BusyCoordinateException
+                        coordinate = options[random.randint(0, len(options)-1)]
+                    if grid[coordinate] == Battlefield.states[6] or grid[coordinate] == Battlefield.states[7]\
+                        or grid[coordinate] == Battlefield.states[9]:
+                        raise TargettedCoordinateException
                     break
-                except Exception:
-                    print(Exception)
+                except Exception as e:
+                    print(e)
             self.targetted_coordinates.append(coordinate)
             if not grid[coordinate]:
                 grid[coordinate] = Battlefield.states[6]
