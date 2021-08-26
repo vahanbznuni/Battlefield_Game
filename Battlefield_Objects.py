@@ -549,15 +549,13 @@ class Computer(Player):
         #             next_coord = battlefield.coord_up(current_coord)
         #             while not Battlefield.states[next_coord]:
         #                 current_coord = next_coord
-        #             next_coord = battlefield.coord_down(current_coord)
-
-                        
-            if coord_down:
-                pass
-            if coord_left:
-                pass
-            if coord_right:
-                pass
+        #             next_coord = battlefield.coord_down(current_coord)                        
+        #     if coord_down:
+        #         pass
+        #     if coord_left:
+        #         pass
+        #     if coord_right:
+        #         pass
 
     def target(self, player):
         shot = 0
