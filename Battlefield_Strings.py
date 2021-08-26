@@ -67,7 +67,7 @@ Then, each player will take turns targetting the opposing player's battlefield.
 if the player succesfully hits a ship, that player will have the next turn. 
 If not, the other player will have the next turn.
 
-The game is won simply by sunking the entire fleet of the opposint player."""
+The game is won simply by sinking the entire fleet of the opposint player."""
 place_ships_str = "\n\nIt is time to place your ships! Are you ready?"
 
 def intro_str():
