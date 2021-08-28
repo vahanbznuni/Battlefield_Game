@@ -457,8 +457,9 @@ class Computer(Player):
                                 next_coord = battlefield.coord_up(current_coord)
                                 if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
                                     break
-                                elif next_coord not in self.targetted_coordinates and next_coord not in options:
-                                    options.append(next_coord)
+                                elif next_coord not in self.targetted_coordinates:
+                                    if next_coord not in options:
+                                        options.append(next_coord)
                                     break
                                 else:
                                     pass
@@ -470,9 +471,9 @@ class Computer(Player):
                                 next_coord = battlefield.coord_down(current_coord)
                                 if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
                                     break
-                                elif next_coord not in self.targetted_coordinates and next_coord not in options:
-                                    options.append(next_coord)
-                                    break
+                                elif next_coord not in self.targetted_coordinates:
+                                    if next_coord not in options:
+                                        options.append(next_coord)
                                 else:
                                     pass
                                 current_coord = next_coord
@@ -483,9 +484,9 @@ class Computer(Player):
                                 next_coord = battlefield.coord_left(current_coord)
                                 if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
                                     break
-                                elif next_coord not in self.targetted_coordinates and next_coord not in options:
-                                    options.append(next_coord)
-                                    break
+                                elif next_coord not in self.targetted_coordinates:
+                                    if next_coord not in options:
+                                        options.append(next_coord)
                                 else:
                                     pass
                                 current_coord = next_coord
@@ -496,9 +497,9 @@ class Computer(Player):
                                 next_coord = battlefield.coord_right(current_coord)
                                 if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
                                     break
-                                elif next_coord not in self.targetted_coordinates and next_coord not in options:
-                                    options.append(next_coord)
-                                    break
+                                elif next_coord not in self.targetted_coordinates:
+                                    if next_coord not in options:
+                                        options.append(next_coord)
                                 else:
                                     pass
                                 current_coord = next_coord
