@@ -382,7 +382,12 @@ class Computer(Player):
     
     def target_options(self, player):
         battlefield = player.battlefield
+        row_index = battlefield.row_index
         target_options = []
+        coord_up = battlefield.coord_up                    
+        coord_down = battlefield.coord_down                   
+        coord_left = battlefield.coord_left                   
+        coord_right = battlefield.coord_right
         if self.active_targets:
             options = []
             for coordinate in self.active_targets:
@@ -401,7 +406,7 @@ class Computer(Player):
                         seperation = index_difference - 1
                         if seperation >= 1:
                             for num in range(seperation):
-                                next_coord = battlefield.coord_right(current_coord)
+                                next_coord = coord_right(current_coord)
                                 if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
                                     row_options = None
                                     break
@@ -410,17 +415,17 @@ class Computer(Player):
                                 current_coord = next_coord
                             options.extend([option for option in row_options if option not in options])    
                 if len(targets_in_column) > 1:
-                    target_row_indices = [battlefield.row_index(target) for target in targets_in_column]
+                    target_row_indices = [row_index(target) for target in targets_in_column]
                     target_row_indices.sort()
-                    if target_row_indices.index(battlefield.row_index(coordinate[0])) < len(target_row_indices) - 1:
+                    if target_row_indices.index(row_index(coordinate[0])) < len(target_row_indices) - 1:
                         column_options = []
                         current_coord = coordinate
-                        index_difference = target_row_indices[target_row_indices.index(battlefield.row_index(coordinate[0])) + 1] - \
-                            target_row_indices[target_row_indices.index(battlefield.row_index(coordinate[0]))]
+                        index_difference = target_row_indices[target_row_indices.index(row_index(coordinate[0])) + 1] - \
+                            target_row_indices[target_row_indices.index(row_index(coordinate[0]))]
                         seperation = index_difference - 1
                         if seperation >= 1:
                             for num in range(seperation):
-                                next_coord = battlefield.coord_down(current_coord)
+                                next_coord = coord_down(current_coord)
                                 if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
                                     column_options = None
                                     break
@@ -430,100 +435,156 @@ class Computer(Player):
                             options.extend([option for option in column_options if option not in options])
             if options:
                 target_options.extend([option for option in options if option not in target_options])
-                print("RESULT 1")
                 return target_options
-            else: 
-                for coordinate in self.active_targets:
-                    if battlefield.coord_up(coordinate):
-                        coord_up = battlefield.coord_up(coordinate)
-                    else:
-                        coord_up = None
-                    if battlefield.coord_down(coordinate):
-                        coord_down = battlefield.coord_down(coordinate)
-                    else:
-                        coord_down = None
-                    if battlefield.coord_left(coordinate):
-                        coord_left = battlefield.coord_left(coordinate)
-                    else:
-                        coord_left = None
-                    if battlefield.coord_right(coordinate):
-                        coord_right = battlefield.coord_right(coordinate)
-                    else:
-                        coord_right = None
-                    if coord_up:
-                        current_coord = coordinate
-                        if coord_up in self.hit_coordinates:
-                            for num in range(battlefield.rows.index(coordinate[0])):
-                                next_coord = battlefield.coord_up(current_coord)
-                                if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
-                                    break
-                                elif next_coord not in self.targetted_coordinates:
-                                    if next_coord not in options:
-                                        options.append(next_coord)
-                                    break
-                                else:
-                                    pass
-                                current_coord = next_coord
-                    if coord_down:
-                        current_coord = coordinate
-                        if coord_down in self.hit_coordinates:
-                            for num in range(len(battlefield.rows) - battlefield.rows.index(coordinate[0])):
-                                next_coord = battlefield.coord_down(current_coord)
-                                if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
-                                    break
-                                elif next_coord not in self.targetted_coordinates:
-                                    if next_coord not in options:
-                                        options.append(next_coord)
-                                else:
-                                    pass
-                                current_coord = next_coord
-                    if coord_left:
-                        current_coord = coordinate
-                        if coord_left in self.hit_coordinates:
-                            for num in range(coordinate[-1]):
-                                next_coord = battlefield.coord_left(current_coord)
-                                if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
-                                    break
-                                elif next_coord not in self.targetted_coordinates:
-                                    if next_coord not in options:
-                                        options.append(next_coord)
-                                else:
-                                    pass
-                                current_coord = next_coord
-                    if coord_right:
-                        current_coord = coordinate
-                        if coord_right in self.hit_coordinates:
-                            for num in range(len(battlefield.columns) - coordinate[-1]):
-                                next_coord = battlefield.coord_right(current_coord)
-                                if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
-                                    break
-                                elif next_coord not in self.targetted_coordinates:
-                                    if next_coord not in options:
-                                        options.append(next_coord)
-                                else:
-                                    pass
-                                current_coord = next_coord
+            else:
+                def adjascent_targets(direction_func, coord):
+                    if direction_func == coord_up:
+                        range_value = row_index(coord)
+                    elif direction_func == coord_down:
+                        range_value = len(battlefield.rows) - row_index(coord)
+                    elif direction_func == coord_left:
+                        range_value = coord[-1]
+                    elif direction_func == coord_right:
+                        range_value = len(battlefield.columns) - coord[-1]
+                    current_coord = coord
+                    if direction_func(coord) and direction_func(coord) in self.hit_coordinates:
+                        for num in range(range_value):
+                            next_coord = direction_func(current_coord)
+                            if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
+                                break
+                            elif next_coord not in self.targetted_coordinates:
+                                if next_coord not in options:
+                                    options.append(next_coord)
+                                break
+                            else:
+                                pass
+                            current_coord = next_coord
+                for coordinate in self.active_targets:   
+                    if coord_up(coordinate):
+                        adjascent_targets(coord_up, coordinate)
+                    if coord_down(coordinate):
+                        adjascent_targets(coord_down, coordinate)
+                    if coord_left(coordinate):
+                        adjascent_targets(coord_left, coordinate)
+                    if coord_right(coordinate):
+                        adjascent_targets(coord_right, coordinate)
                 if options:
                     target_options.extend([option for option in options if option not in target_options])
-                    print("RESULT 2")
                     return target_options
                 else:    
                     for coordinate in self.active_targets:
-                        if coord_up:
-                            if coord_up not in self.targetted_coordinates and coord_up not in target_options:
-                                options.append(coord_up)
-                        if coord_down:
-                            if coord_down not in self.targetted_coordinates and coord_down not in target_options:
-                                options.append(coord_down)
-                        if coord_left:
-                            if coord_left not in self.targetted_coordinates and coord_left not in target_options:
-                                options.append(coord_left)
-                        if coord_right:
-                            if coord_right not in self.targetted_coordinates and coord_right not in target_options:
-                                options.append(coord_right)
+                        if coord_up(coordinate):
+                            if coord_up(coordinate) not in self.targetted_coordinates and coord_up not in target_options:
+                                options.append(coord_up(coordinate))
+                        if coord_down(coordinate):
+                            if coord_down(coordinate) not in self.targetted_coordinates and coord_down not in target_options:
+                                options.append(coord_down(coordinate))
+                        if coord_left(coordinate):
+                            if coord_left(coordinate) not in self.targetted_coordinates and coord_left not in target_options:
+                                options.append(coord_left(coordinate))
+                        if coord_right(coordinate):
+                            if coord_right(coordinate) not in self.targetted_coordinates and coord_right not in target_options:
+                                options.append(coord_right(coordinate))
                     target_options.extend([option for option in options if option not in target_options])
-                    print("RESULT 3")
                     return target_options
+        else:
+            available_targets = [coordinate for coordinate in battlefield.coordinates if not battlefield.grid[coordinate]\
+                 or battlefield.grid[coordinate] == Battlefield.states[5]]  
+            options = []
+            options_preferred_A = []
+            options_preferred_B = []
+            options_preferred_C = []
+            options_preferred_D = []
+            options_preferred_E = []
+            options_preferred_F = []
+            preferred_lists_temp = [options_preferred_A, options_preferred_B, options_preferred_C, options_preferred_D,\
+                 options_preferred_E, options_preferred_F]
+            def next_targetted_coord(direction_func, coord):
+                if direction_func == coord_up:
+                    range_value = row_index(coord)
+                elif direction_func == coord_down:
+                    range_value = len(battlefield.rows) - row_index(coord)
+                elif direction_func == coord_left:
+                    range_value = coord[-1]
+                elif direction_func == coord_right:
+                    range_value = len(battlefield.columns) - coord[-1]
+                current_coord = coord
+                if direction_func(coord) and direction_func(coord) not in self.targetted_coordinates:
+                    for num in range(range_value):
+                        next_coord = direction_func(current_coord)
+                        if next_coord in self.targetted_coordinates:
+                            return next_coord
+                        elif next_coord:
+                            current_coord = next_coord
+            def horizontal_target_size(coord):
+                left_border = next_targetted_coord(coord_left, coord)
+                right_border = next_targetted_coord(coord_right, coord)
+                if left_border and right_border:
+                    difference = right_border[-1] - left_border[-1]
+                    target_size = difference - 1
+                elif left_border and not right_border:
+                    difference = len(battlefield.rows) - left_border[-1]
+                    target_size = difference
+                elif not left_border and right_border:
+                    difference = right_border[-1]
+                    target_size = difference - 1
+                elif not left_border and not right_border:
+                    target_size = len(battlefield.rows)
+                return target_size
+            def vertical_target_size(coord):
+                top_border = next_targetted_coord(coord_up, coord)
+                bottom_border = next_targetted_coord(coord_down, coord)
+                if top_border and bottom_border:
+                    difference = row_index(bottom_border) - row_index(top_border) 
+                    target_size = difference - 1
+                if top_border and not bottom_border:
+                    difference = len(battlefield.rows) - 1 - row_index(top_border)
+                    target_size = difference
+                if not top_border and bottom_border:
+                    difference = row_index(bottom_border)
+                    target_size = difference
+                if not top_border and not bottom_border:
+                    target_size = len(battlefield.rows)
+                return target_size
+            for coordinate in available_targets:
+                for ship in player.fleet.values():
+                    if not ship.sunk:
+                        if ship.size <= horizontal_target_size(coordinate) or ship.size <= vertical_target_size(coordinate):
+                            if coordinate not in options:
+                                options.append(coordinate)
+            for option in options:
+                a1 = (coord_up(option) and coord_up(option) in available_targets)\
+                    and (coord_up(coord_up(option)) and coord_up(coord_up(option)) in available_targets)
+                b1 = (coord_down(option) and coord_down(option) in available_targets)\
+                    and (coord_down(coord_down(option)) and coord_down(coord_down(option)) in available_targets)
+                c1 = (coord_left(option) and coord_left(option) in available_targets)\
+                    and (coord_left(coord_left(option)) and coord_left(coord_left(option)) in available_targets)
+                d1 = (coord_right(option) and coord_right(option) in available_targets)\
+                    and (coord_right(coord_right(option)) and coord_right(coord_right(option)) in available_targets)
+                a2 = (coord_up(option) and coord_up(option) in available_targets)
+                b2 = (coord_down(option) and coord_down(option) in available_targets)
+                c2 = (coord_left(option) and coord_left(option) in available_targets)
+                d2 = (coord_right(option) and coord_right(option) in available_targets)
+                if (a1 and b1 and c1 and d1) and option not in options_preferred_A:
+                    options_preferred_A.append(option)
+                elif (a1 and b1 and c2 and d2) or (a2 and b2 and c1 and d1)\
+                    and option not in options_preferred_A:
+                    options_preferred_B.append(option)
+                elif (a2 and b2 and c2 and d2) and option not in options_preferred_C:
+                    options_preferred_C.append(option)
+                elif ((a1 and b1) or (c1 and d1)) and option not in options_preferred_D:
+                    options_preferred_D.append(option)
+                elif ((a2 and b2) or (c2 and d2)) and option not in options_preferred_E:
+                    options_preferred_E.append(option)
+                elif (a2 or b2 or c2 and d2) and option not in options_preferred_F:
+                    options_preferred_F.append(option)
+            preferred_lists = [x for x in preferred_lists_temp if x]
+            if preferred_lists:
+                target_options.extend([option for option in preferred_lists[0] if option not in target_options])
+                return target_options
+            else:
+                target_options.extend([option for option in options if option not in target_options])
+                return target_options
 
     def target(self, player):
         shot = 0
@@ -539,11 +600,15 @@ class Computer(Player):
             input(continue_str)
             while True:
                 try:
-                    if not self.active_targets:
-                        coordinate = (rows[random.randint(0, len(rows)-1)], random.randint(1, len(columns)))
-                    else:
+                    if self.target_options(player):
                         options = self.target_options(player)
-                        coordinate = options[random.randint(0, len(options)-1)]
+                        random_num = random.randint(0, 5)
+                        if self.active_targets or random_num <5:
+                            coordinate = options[random.randint(0, len(options)-1)]
+                        elif not self.active_targets and random_num == 5:
+                            coordinate = (rows[random.randint(0, len(rows)-1)], random.randint(1, len(columns)))
+                    elif not self.target_options(player):
+                        coordinate = (rows[random.randint(0, len(rows)-1)], random.randint(1, len(columns)))
                     if grid[coordinate] == Battlefield.states[6] or grid[coordinate] == Battlefield.states[7]\
                         or grid[coordinate] == Battlefield.states[9]:
                             raise TargettedCoordinateException
@@ -598,6 +663,7 @@ class NotEnoughRoomException(Exception):
     """
     For Bad coordinate inputs when input coordinate does not allow enough room for given ship
     """ 
+
 #=================================================================================================================
 #Test_Zone:
 # test_player = Player()
