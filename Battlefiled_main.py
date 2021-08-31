@@ -38,5 +38,5 @@ while not check_winner():
             input(strings.continue_str)  
     
 print(NL*2 + strings.final_str3)
-print(NL + strings.final_str)
+print(NL + strings.final_str1)
 input(NL + strings.final_str2)
