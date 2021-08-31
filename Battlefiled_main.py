@@ -37,5 +37,6 @@ while not check_winner():
         else:
             input(strings.continue_str)  
     
-print(NL*2 + strings.final_str)
-input(strings.final_str2)
+print(NL*2 + strings.final_str3)
+print(NL + strings.final_str)
+input(NL + strings.final_str2)

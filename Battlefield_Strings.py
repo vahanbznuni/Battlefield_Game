@@ -95,9 +95,13 @@ battlefield_str = "{} Battlefield: "
 
 winner_str_raw = "{} HAS WON!!!"
 winner_str = textwrap.dedent(line_wrap3(winner_str_raw))
-final_str_raw = "THANK YOU FOR PLAYING!"
-final_str = NL + textwrap.dedent(line_wrap1(final_str_raw))
-final_str2 = "\n\n>>>Please press ENTER key to Exit<<<"
+final_str1_raw = "THANK YOU FOR PLAYING!"
+final_str1 = NL + line_wrap3(center_wrap((final_str1_raw)))
+final_str2_raw = "\n\n>>>Please press ENTER key to Exit<<<"
+final_str2 = NL + center_wrap(final_str2_raw)
+final_str3 = NL + line_wrap1(center_wrap(header_str))
+final_str4_raw = "THE END."
+final_str4 = NL + line_wrap1(center_wrap(final_str4_raw))
 
 class object_strings:
     error_str = NL*2 + "INCORRECT INPUT! \n{} Please try again!"
