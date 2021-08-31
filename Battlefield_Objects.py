@@ -686,7 +686,7 @@ class NotEnoughRoomException(Exception):
 #=================================================================================================================
 #Test_Zone:
 # test_player = Player()
-test_computer = Computer()
+# test_computer = Computer()
 # test_player.battlefield.display_wrapped()
 # test_coordinates1 = []
 # for ship in test_player.fleet.values():
@@ -715,36 +715,36 @@ test_computer = Computer()
 # test_player.battlefield.display_wrapped()
 
 
-a = test_computer.battlefield
-print("   " + "  ".join([str(column) for column in a.columns]))
-for row_name in a.rows:
-    row = []
-    for key in a.grid.keys():
-        if key[0] == row_name:
-            if not a.grid[key]:
-                row.append("[ ]")
-            elif a.grid[key]==Battlefield.states[1]:
-                row.append("[1]")
-            elif a.grid[key]==Battlefield.states[2]:
-                row.append("[2]")
-            elif a.grid[key]==Battlefield.states[3]:
-                row.append("[3]")
-            elif a.grid[key]==Battlefield.states[4]:
-                row.append("[4]")
-            elif a.grid[key]==Battlefield.states[5]:
-                row.append("[+]")
-            elif a.grid[key]==Battlefield.states[6]:
-                row.append("[o]")
-            elif a.grid[key]==Battlefield.states[7]:
-                row.append("[X]")
-            elif a.grid[key]==Battlefield.states[8]:
-                row.append("[*]")
-            elif a.grid[key]==Battlefield.states[9]:
-                row.append("[#]")                      
-    print(row_name + " " + "".join(row))
+# a = test_computer.battlefield
+# print("   " + "  ".join([str(column) for column in a.columns]))
+# for row_name in a.rows:
+#     row = []
+#     for key in a.grid.keys():
+#         if key[0] == row_name:
+#             if not a.grid[key]:
+#                 row.append("[ ]")
+#             elif a.grid[key]==Battlefield.states[1]:
+#                 row.append("[1]")
+#             elif a.grid[key]==Battlefield.states[2]:
+#                 row.append("[2]")
+#             elif a.grid[key]==Battlefield.states[3]:
+#                 row.append("[3]")
+#             elif a.grid[key]==Battlefield.states[4]:
+#                 row.append("[4]")
+#             elif a.grid[key]==Battlefield.states[5]:
+#                 row.append("[+]")
+#             elif a.grid[key]==Battlefield.states[6]:
+#                 row.append("[o]")
+#             elif a.grid[key]==Battlefield.states[7]:
+#                 row.append("[X]")
+#             elif a.grid[key]==Battlefield.states[8]:
+#                 row.append("[*]")
+#             elif a.grid[key]==Battlefield.states[9]:
+#                 row.append("[#]")                      
+#     print(row_name + " " + "".join(row))
 
-print("/n")
-for ship in test_computer.fleet.values():
-    print(ship.type, ship.coordinates)
-input("continue")
+# print("/n")
+# for ship in test_computer.fleet.values():
+#     print(ship.type, ship.coordinates)
+# input("continue")
 #=================================================================================================================
