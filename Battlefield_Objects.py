@@ -215,8 +215,12 @@ class ComputerBattlefield(Battlefield):
     def gen_coords(self, ship_type):
         coordinates = []
         start_coordinate = (self.rows[random.randint(0, len(self.rows)-1)], random.randint(1, len(self.columns)))
+        if self.grid[start_coordinate] == Battlefield.states[5]:
+            raise BusyCoordinateException
         coordinates.append(start_coordinate)
         options = list(self.coord_opts(start_coordinate, ship_type).values())
+        if not options:
+            raise NotEnoughRoomException
         for coord in options[random.randint(0, len(options)-1)][1:]:
             coordinates.append(coord)
         coordinates.sort()
@@ -249,6 +253,21 @@ class ComputerBattlefield(Battlefield):
                     elif self.grid[key]==Battlefield.states[9]:
                         row.append("[#]")                    
             print(row_name + " " + "".join(row))
+
+    def generate_ships(self):
+        fleet = {}
+        for ship_type in Ship.types.keys():
+            error_str = obj_str.error_str
+            while True:
+                try:
+                    ship = Ship(self.gen_coords(ship_type), ship_type, self)
+                    break
+                except BusyCoordinateException as a:
+                    pass
+                except NotEnoughRoomException as b:
+                    pass
+            fleet[ship_type] = ship
+        return fleet
 
 class Ship:
     types = {"Carrier": 5, "Battleship": 4, "Destroyer": 3, "Submarine": 3,\
@@ -614,7 +633,7 @@ class Computer(Player):
                             raise TargettedCoordinateException
                     break
                 except Exception as e:
-                    print(e)
+                    pass
             self.targetted_coordinates.append(coordinate)
             if not grid[coordinate]:
                 grid[coordinate] = Battlefield.states[6]
@@ -667,7 +686,7 @@ class NotEnoughRoomException(Exception):
 #=================================================================================================================
 #Test_Zone:
 # test_player = Player()
-# test_computer = Computer()
+test_computer = Computer()
 # test_player.battlefield.display_wrapped()
 # test_coordinates1 = []
 # for ship in test_player.fleet.values():
@@ -695,4 +714,37 @@ class NotEnoughRoomException(Exception):
 #     test_player.battlefield.grid[coord] = test_player.battlefield.states[8]
 # test_player.battlefield.display_wrapped()
 
+
+a = test_computer.battlefield
+print("   " + "  ".join([str(column) for column in a.columns]))
+for row_name in a.rows:
+    row = []
+    for key in a.grid.keys():
+        if key[0] == row_name:
+            if not a.grid[key]:
+                row.append("[ ]")
+            elif a.grid[key]==Battlefield.states[1]:
+                row.append("[1]")
+            elif a.grid[key]==Battlefield.states[2]:
+                row.append("[2]")
+            elif a.grid[key]==Battlefield.states[3]:
+                row.append("[3]")
+            elif a.grid[key]==Battlefield.states[4]:
+                row.append("[4]")
+            elif a.grid[key]==Battlefield.states[5]:
+                row.append("[+]")
+            elif a.grid[key]==Battlefield.states[6]:
+                row.append("[o]")
+            elif a.grid[key]==Battlefield.states[7]:
+                row.append("[X]")
+            elif a.grid[key]==Battlefield.states[8]:
+                row.append("[*]")
+            elif a.grid[key]==Battlefield.states[9]:
+                row.append("[#]")                      
+    print(row_name + " " + "".join(row))
+
+print("/n")
+for ship in test_computer.fleet.values():
+    print(ship.type, ship.coordinates)
+input("continue")
 #=================================================================================================================
