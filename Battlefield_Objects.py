@@ -595,11 +595,15 @@ class Computer(Player):
                     options_preferred_D.append(option)
                 elif ((a2 and b2) or (c2 and d2)) and option not in options_preferred_E:
                     options_preferred_E.append(option)
-                elif (a2 or b2 or c2 and d2) and option not in options_preferred_F:
+                elif (a2 or b2 or c2 or d2) and option not in options_preferred_F:
                     options_preferred_F.append(option)
             preferred_lists = [x for x in preferred_lists_temp if x]
             if preferred_lists:
-                if len(preferred_lists) >= 2:
+                if options_preferred_A and len(preferred_lists) >= 4:
+                    num = random.randint(0, 3)
+                elif options_preferred_A and len(preferred_lists) >= 3:
+                    num = random.randint(0, 2)
+                elif options_preferred_A and len(preferred_lists) >= 2:
                     num = random.randint(0, 1)
                 else:
                     num = 0
