@@ -599,7 +599,11 @@ class Computer(Player):
                     options_preferred_F.append(option)
             preferred_lists = [x for x in preferred_lists_temp if x]
             if preferred_lists:
-                target_options.extend([option for option in preferred_lists[0] if option not in target_options])
+                if len(preferred_lists) >= 2:
+                    num = random.randint(0, 1)
+                else:
+                    num = 0
+                target_options.extend([option for option in preferred_lists[num] if option not in target_options])
                 return target_options
             else:
                 target_options.extend([option for option in options if option not in target_options])
