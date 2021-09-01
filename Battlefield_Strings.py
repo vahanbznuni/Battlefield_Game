@@ -94,7 +94,7 @@ player_battlefield_str = "Your Battlefield: "
 battlefield_str = "{} Battlefield: "
 
 winner_str_raw = "{} HAS WON!!!"
-winner_str = textwrap.dedent(line_wrap3(winner_str_raw))
+winner_str = line_wrap3(center_wrap(winner_str_raw))
 final_str1_raw = "THANK YOU FOR PLAYING!"
 final_str1 = NL + line_wrap3(center_wrap((final_str1_raw)))
 final_str2_raw = "\n\n>>>Please press ENTER key to Exit<<<"
