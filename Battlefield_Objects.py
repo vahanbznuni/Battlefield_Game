@@ -605,7 +605,7 @@ class Computer(Player):
                 if alternative_num == 0 or not preferred_lists_2:
                     target_options.extend([option for option in preferred_lists_1[0] if option not in target_options])
                 else:
-                    target_options.extend([option for option in preferred_lists_2[random.randint(0, len(preferred_lists_2))] if option not in target_options])
+                    target_options.extend([option for option in preferred_lists_2[random.randint(0, len(preferred_lists_2) - 1)] if option not in target_options])
                 return target_options
             else:
                 target_options.extend([option for option in options if option not in target_options])
@@ -625,14 +625,10 @@ class Computer(Player):
             input(continue_str)
             while True:
                 try:
-                    if self.target_options(player):
-                        options = self.target_options(player)
-                        random_num = random.randint(0, 5)
-                        if self.active_targets or random_num <5:
+                    options = self.target_options(player)
+                    if options:
                             coordinate = options[random.randint(0, len(options)-1)]
-                        elif not self.active_targets and random_num == 5:
-                            coordinate = (rows[random.randint(0, len(rows)-1)], random.randint(1, len(columns)))
-                    elif not self.target_options(player):
+                    else:
                         coordinate = (rows[random.randint(0, len(rows)-1)], random.randint(1, len(columns)))
                     if grid[coordinate] == Battlefield.states[6] or grid[coordinate] == Battlefield.states[7]\
                         or grid[coordinate] == Battlefield.states[9]:
