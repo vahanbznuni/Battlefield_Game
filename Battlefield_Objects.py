@@ -516,8 +516,9 @@ class Computer(Player):
             options_preferred_D = []
             options_preferred_E = []
             options_preferred_F = []
-            preferred_lists_temp = [options_preferred_A, options_preferred_B, options_preferred_C, options_preferred_D,\
+            preferred_lists_temp_1 = [options_preferred_A, options_preferred_B, options_preferred_C, options_preferred_D,\
                  options_preferred_E, options_preferred_F]
+            preferred_lists_temp_2 = [options_preferred_A, options_preferred_B, options_preferred_C, options_preferred_D]
             def next_targetted_coord(direction_func, coord):
                 if direction_func == coord_up:
                     range_value = row_index(coord)
@@ -572,43 +573,39 @@ class Computer(Player):
                             if coordinate not in options:
                                 options.append(coordinate)
             for option in options:
-                a1 = (coord_up(option) and coord_up(option) in available_targets)\
+                up_2x = (coord_up(option) and coord_up(option) in available_targets)\
                     and (coord_up(coord_up(option)) and coord_up(coord_up(option)) in available_targets)
-                b1 = (coord_down(option) and coord_down(option) in available_targets)\
+                down_2x = (coord_down(option) and coord_down(option) in available_targets)\
                     and (coord_down(coord_down(option)) and coord_down(coord_down(option)) in available_targets)
-                c1 = (coord_left(option) and coord_left(option) in available_targets)\
+                left_2x = (coord_left(option) and coord_left(option) in available_targets)\
                     and (coord_left(coord_left(option)) and coord_left(coord_left(option)) in available_targets)
-                d1 = (coord_right(option) and coord_right(option) in available_targets)\
+                right_2x = (coord_right(option) and coord_right(option) in available_targets)\
                     and (coord_right(coord_right(option)) and coord_right(coord_right(option)) in available_targets)
-                a2 = (coord_up(option) and coord_up(option) in available_targets)
-                b2 = (coord_down(option) and coord_down(option) in available_targets)
-                c2 = (coord_left(option) and coord_left(option) in available_targets)
-                d2 = (coord_right(option) and coord_right(option) in available_targets)
-                if (a1 and b1 and c1 and d1) and option not in options_preferred_A:
+                up_1x = (coord_up(option) and coord_up(option) in available_targets)
+                down_1x = (coord_down(option) and coord_down(option) in available_targets)
+                left_1x = (coord_left(option) and coord_left(option) in available_targets)
+                right_1x = (coord_right(option) and coord_right(option) in available_targets)
+                if (up_2x and down_2x and left_2x and right_2x) and option not in options_preferred_A:
                     options_preferred_A.append(option)
-                elif (a1 and b1 and c2 and d2) or (a2 and b2 and c1 and d1)\
+                elif (up_2x and down_2x and left_1x and right_1x) or (up_1x and down_1x and left_2x and right_2x)\
                     and option not in options_preferred_A:
                     options_preferred_B.append(option)
-                elif (a2 and b2 and c2 and d2) and option not in options_preferred_C:
+                elif (up_1x and down_1x and left_1x and right_1x) and option not in options_preferred_C:
                     options_preferred_C.append(option)
-                elif ((a1 and b1) or (c1 and d1)) and option not in options_preferred_D:
+                elif ((up_2x and down_2x) or (left_2x and right_2x)) and option not in options_preferred_D:
                     options_preferred_D.append(option)
-                elif ((a2 and b2) or (c2 and d2)) and option not in options_preferred_E:
+                elif ((up_1x and down_1x) or (left_1x and right_1x)) and option not in options_preferred_E:
                     options_preferred_E.append(option)
-                elif (a2 or b2 or c2 or d2) and option not in options_preferred_F:
+                elif (up_1x or down_1x or left_1x or right_1x) and option not in options_preferred_F:
                     options_preferred_F.append(option)
-            preferred_lists = [x for x in preferred_lists_temp if x]
-            if preferred_lists:
-                prefered_index_1 = 0
-                if len(preferred_lists) >= 4:
-                    prefered_index_2 = random.randint(1, 3)
-                elif 1 < len(preferred_lists) < 4:
-                    prefered_index_2 = random.randint(1, len(preferred_lists) - 1)
+            preferred_lists_1 = [x for x in preferred_lists_temp_1 if x]
+            preferred_lists_2 = [x for x in preferred_lists_temp_2 if x]
+            if preferred_lists_1:
+                alternative_num = random.randint(0, 1)
+                if alternative_num == 0 or not preferred_lists_2:
+                    target_options.extend([option for option in preferred_lists_1[0] if option not in target_options])
                 else:
-                    prefered_index_2 = 0
-                alternate_preferred_indices = [prefered_index_1, prefered_index_2]
-                target_options.extend([option for option in preferred_lists[alternate_preferred_indices[random.randint(0, 1)]]\
-                     if option not in target_options])
+                    target_options.extend([option for option in preferred_lists_2[random.randint(0, len(preferred_lists_2))] if option not in target_options])
                 return target_options
             else:
                 target_options.extend([option for option in options if option not in target_options])
