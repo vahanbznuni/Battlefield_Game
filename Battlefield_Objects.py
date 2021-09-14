@@ -15,7 +15,7 @@ class Battlefield:
                 self.coordinates.append((row, column))
         self.grid = {coordinate: None for coordinate in self.coordinates}
 
-    def display(self):
+   def display(self):
         print("   " + "  ".join([str(column) for column in self.columns]))
         for row_name in self.rows:
             row = []
@@ -349,7 +349,7 @@ class Player:
                 error_str = obj_str.error_str
                 try:
                     input1 = (input(obj_str.target_cords_str))
-                    coordinate = (input1[0].upper(), int(input1[1:]))
+                 coordinate = (input1[0].upper(), int(input1[1:]))
                     if grid[coordinate] == Battlefield.states[6] or grid[coordinate] == Battlefield.states[7]\
                         or grid[coordinate] == Battlefield.states[9]:
                         raise TargettedCoordinateException
@@ -516,8 +516,9 @@ class Computer(Player):
             options_preferred_D = []
             options_preferred_E = []
             options_preferred_F = []
+            options_preferred_G = []
             preferred_lists_temp_1 = [options_preferred_A, options_preferred_B, options_preferred_C, options_preferred_D,\
-                 options_preferred_E, options_preferred_F]
+                 options_preferred_E, options_preferred_F, options_preferred_G]
             preferred_lists_temp_2 = [options_preferred_A, options_preferred_B, options_preferred_C, options_preferred_D]
             def next_targetted_coord(direction_func, coord):
                 if direction_func == coord_up:
@@ -573,31 +574,44 @@ class Computer(Player):
                             if coordinate not in options:
                                 options.append(coordinate)
             for option in options:
+                #guyguygu
                 up_2x = (coord_up(option) and coord_up(option) in available_targets)\
                     and (coord_up(coord_up(option)) and coord_up(coord_up(option)) in available_targets)
+
                 down_2x = (coord_down(option) and coord_down(option) in available_targets)\
                     and (coord_down(coord_down(option)) and coord_down(coord_down(option)) in available_targets)
+
                 left_2x = (coord_left(option) and coord_left(option) in available_targets)\
                     and (coord_left(coord_left(option)) and coord_left(coord_left(option)) in available_targets)
+
                 right_2x = (coord_right(option) and coord_right(option) in available_targets)\
                     and (coord_right(coord_right(option)) and coord_right(coord_right(option)) in available_targets)
                 up_1x = (coord_up(option) and coord_up(option) in available_targets)
+
                 down_1x = (coord_down(option) and coord_down(option) in available_targets)
                 left_1x = (coord_left(option) and coord_left(option) in available_targets)
                 right_1x = (coord_right(option) and coord_right(option) in available_targets)
-                if (up_2x and down_2x and left_2x and right_2x) and option not in options_preferred_A:
+                A = (up_2x and down_2x and left_2x and right_2x)
+                B = (up_2x and down_2x and left_1x and right_1x) or (up_1x and down_1x and left_2x and right_2x)
+                C = (up_1x and down_1x and left_1x and right_1x)
+                D = (up_2x and down_2x and (left_1x or right_1x)) or ((up_1x or down_1x) and left_2x and right_2x)
+                E = ((up_2x and down_2x) or (left_2x and right_2x))
+                F = ((up_1x and down_1x) or (left_1x and right_1x))
+                G = (up_1x or down_1x or left_1x or right_1x)
+                if A and option not in options_preferred_A:
                     options_preferred_A.append(option)
-                elif (up_2x and down_2x and left_1x and right_1x) or (up_1x and down_1x and left_2x and right_2x)\
-                    and option not in options_preferred_A:
+                elif B and option not in options_preferred_B:
                     options_preferred_B.append(option)
-                elif (up_1x and down_1x and left_1x and right_1x) and option not in options_preferred_C:
+                elif C and option not in options_preferred_C:
                     options_preferred_C.append(option)
-                elif ((up_2x and down_2x) or (left_2x and right_2x)) and option not in options_preferred_D:
+                elif D and option not in options_preferred_D:
                     options_preferred_D.append(option)
-                elif ((up_1x and down_1x) or (left_1x and right_1x)) and option not in options_preferred_E:
+                elif E and option not in options_preferred_E:
                     options_preferred_E.append(option)
-                elif (up_1x or down_1x or left_1x or right_1x) and option not in options_preferred_F:
+                elif F and option not in options_preferred_F:
                     options_preferred_F.append(option)
+                elif G and option not in options_preferred_G:
+                    options_preferred_G.append(option)
             preferred_lists_1 = [x for x in preferred_lists_temp_1 if x]
             preferred_lists_2 = [x for x in preferred_lists_temp_2 if x]
             if preferred_lists_1:
