@@ -15,7 +15,7 @@ class Battlefield:
                 self.coordinates.append((row, column))
         self.grid = {coordinate: None for coordinate in self.coordinates}
 
-   def display(self):
+    def display(self):
         print("   " + "  ".join([str(column) for column in self.columns]))
         for row_name in self.rows:
             row = []
