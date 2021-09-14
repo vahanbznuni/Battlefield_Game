@@ -349,7 +349,7 @@ class Player:
                 error_str = obj_str.error_str
                 try:
                     input1 = (input(obj_str.target_cords_str))
-                 coordinate = (input1[0].upper(), int(input1[1:]))
+                    coordinate = (input1[0].upper(), int(input1[1:]))
                     if grid[coordinate] == Battlefield.states[6] or grid[coordinate] == Battlefield.states[7]\
                         or grid[coordinate] == Battlefield.states[9]:
                         raise TargettedCoordinateException
