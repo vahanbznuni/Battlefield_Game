@@ -585,7 +585,7 @@ class Computer(Player):
                             if coordinate not in options:
                                 options.append(coordinate)
             for option in options:
-                #guyguygu
+
                 up_2x = (coord_up(option) and coord_up(option) in available_targets)\
                     and (coord_up(coord_up(option)) and coord_up(coord_up(option)) in available_targets)
 
@@ -597,11 +597,12 @@ class Computer(Player):
 
                 right_2x = (coord_right(option) and coord_right(option) in available_targets)\
                     and (coord_right(coord_right(option)) and coord_right(coord_right(option)) in available_targets)
+                
                 up_1x = (coord_up(option) and coord_up(option) in available_targets)
-
                 down_1x = (coord_down(option) and coord_down(option) in available_targets)
                 left_1x = (coord_left(option) and coord_left(option) in available_targets)
                 right_1x = (coord_right(option) and coord_right(option) in available_targets)
+                
                 A = (up_2x and down_2x and left_2x and right_2x)
                 B = (up_2x and down_2x and left_1x and right_1x) or (up_1x and down_1x and left_2x and right_2x)
                 C = (up_1x and down_1x and left_1x and right_1x)
@@ -609,6 +610,7 @@ class Computer(Player):
                 E = ((up_2x and down_2x) or (left_2x and right_2x))
                 F = ((up_1x and down_1x) or (left_1x and right_1x))
                 G = (up_1x or down_1x or left_1x or right_1x)
+                
                 if A and option not in options_preferred_A:
                     options_preferred_A.append(option)
                 elif B and option not in options_preferred_B:
