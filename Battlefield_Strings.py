@@ -1,3 +1,12 @@
+"""
+Strings Module. Contains all the strings used by Main and Object modules, and string formatting functionality.
+
+The numbered line_str and side_str variables contain different single-line seperator strings.
+The numbered line_wrap - as well as side_wrap and center_wrap funcitons assist with formatting using seperator strings.
+The Intro_str function displays all of the introductory text of the game, and includes user input to continue.
+The Object_strings class organizes the main strings used by the Objects module.
+"""
+
 import textwrap
 
 NL = "\n"

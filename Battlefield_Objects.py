@@ -1,3 +1,14 @@
+"""
+Objects Module. Contains all the classes of the game, which contain all data, display, interactivity, and internal game funcitonality elements.
+ 
+The Battlefield class contains the main data structure(s) for players' Battlefields'; display functionality, and interactive ship placement for player.
+The ComputerBattlefield subclass of Battlefield class overrides display and ship placement functionality of the parent class (custumized for computer).
+The Ship class contains data structure(s) relating to each ship, including its coordinates, it's name/type, and it's health status.
+The Player class stores each player's individual Battlefield, a listing of their ships, as well as interagtive targetting functionality.
+The Computer subclass of Player overrides targetting functionality and related attributes/methods of parent class (custumized for computer).
+The InputException subclass of the built-in Exception class - as well as subclasses of InputException - assist with the game's exception handling.
+"""
+
 import string
 from Battlefield_Strings import line_str1, line_str2, NL, continue_str, line_wrap3, object_strings as obj_str, \
     battlefield_str, ready_str, target_str, incoming_str

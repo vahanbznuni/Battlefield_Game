@@ -1,3 +1,5 @@
+"""Main Module. Controls main flow of the game."""
+
 # import string
 import Battlefield_Objects as obj
 import Battlefield_Strings as strings
