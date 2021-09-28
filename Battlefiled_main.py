@@ -1,10 +1,10 @@
 """
 Main Module. Controls main flow of the game.
-
+ 
 The check_winner funciton checks if there is a winner.
 The current_turn_string function returns custom string indicating who's turn it is (Player's or Computer's).
 The turn function executes a turn (targetting opposing player).
-The ready_to_play contains a printy statement for player readiness to start - and a calls display the player's battlerfield.
+The ready_to_play contains a print statement for player readiness to start - and a calls a display of the player's battlerfield.
 The play_game function executes the main game - by alternating turns until there is a winner.
 The end_game function contains the closing statements - including winner statement.
 """
