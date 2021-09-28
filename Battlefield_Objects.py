@@ -182,25 +182,7 @@ class Battlefield:
                     coordinates.append(coord)
                 coordinates.sort()
                 return coordinates
-
-    # def input_coords(self, coordinate):
-    #     error_str = obj_str.error_str
-    #     while True:
-    #         try:
-    #             input_coord = coordinate
-    #             break
-    #         except ValueError:
-    #             print(error_str.format(obj_str.value_error_str))
-    #         except KeyError:
-    #             print(error_str.format(obj_str.key_error_str))
-    #         except BusyCoordinateException:
-    #             print(error_str.format(obj_str.busy_coord_error_str))
-    #         except NotEnoughRoomException:
-    #             print(error_str.format(obj_str.not_enough_room_error_str))
-    #         except TargettedCoordinateException:
-    #             print(error_str.format(obj_str.targetted_coord_error_str))
-    #     return input_coord
-       
+     
     def generate_ships(self):
         fleet = {}
         for ship_type in Ship.types.keys():
@@ -617,16 +599,21 @@ class Computer(Player):
             for option in options:
                 up_2x = (coord_up(option) and coord_up(option) in available_targets)\
                     and (coord_up(coord_up(option)) and coord_up(coord_up(option)) in available_targets)
+                
                 down_2x = (coord_down(option) and coord_down(option) in available_targets)\
                     and (coord_down(coord_down(option)) and coord_down(coord_down(option)) in available_targets)
+                
                 left_2x = (coord_left(option) and coord_left(option) in available_targets)\
                     and (coord_left(coord_left(option)) and coord_left(coord_left(option)) in available_targets)
+                
                 right_2x = (coord_right(option) and coord_right(option) in available_targets)\
                     and (coord_right(coord_right(option)) and coord_right(coord_right(option)) in available_targets)
+                
                 up_1x = (coord_up(option) and coord_up(option) in available_targets)
                 down_1x = (coord_down(option) and coord_down(option) in available_targets)
                 left_1x = (coord_left(option) and coord_left(option) in available_targets)
                 right_1x = (coord_right(option) and coord_right(option) in available_targets)
+                
                 A = (up_2x and down_2x and left_2x and right_2x)
                 B = (up_2x and down_2x and left_1x and right_1x) or (up_1x and down_1x and left_2x and right_2x)
                 C = (up_1x and down_1x and left_1x and right_1x)
@@ -649,6 +636,7 @@ class Computer(Player):
                     options_preferred_F.append(option)
                 elif G and option not in options_preferred_G:
                     options_preferred_G.append(option)
+                    
             preferred_lists_1 = [x for x in preferred_lists_temp_1 if x]
             preferred_lists_2 = [x for x in preferred_lists_temp_2 if x]
             if preferred_lists_1:
