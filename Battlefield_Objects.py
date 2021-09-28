@@ -204,7 +204,7 @@ class Battlefield:
             fleet[ship_type] = ship
         return fleet
 
-    def smart_targetting_1(self, coordinate, active_targets, targetted_coordinates):
+    def smart_targetting_1(self, coordinate, active_targets, targetted_coordinates, player_ships):
         options = []                 
         coord_down = self.coord_down                                    
         coord_right = self.coord_right
@@ -213,6 +213,11 @@ class Battlefield:
         column = self.get_column(coordinate)
         targets_in_row = [target for target in active_targets if target in row]
         targets_in_column = [target for target in active_targets if target in column]
+        largest_ship_size = 0
+        for ship in player_ships:
+            if not ship.sunk:
+                if ship.size >= largest_ship_size:
+                    largest_ship_size = ship.size
         if len(targets_in_row) > 1:
             target_columns = [target[-1] for target in targets_in_row]
             target_columns.sort()
@@ -222,7 +227,7 @@ class Battlefield:
                 index_difference = target_columns[target_columns.index(coordinate[-1]) + 1] - \
                     target_columns[target_columns.index(coordinate[-1])]
                 seperation = index_difference - 1
-                if seperation >= 1:
+                if (largest_ship_size - 2) >= seperation >= 1:
                     for num in range(seperation):
                         next_coord = coord_right(current_coord)
                         if next_coord in targetted_coordinates and next_coord not in self.hit_coordinates:
@@ -241,7 +246,7 @@ class Battlefield:
                 index_difference = target_row_indices[target_row_indices.index(row_index(coordinate[0])) + 1] - \
                     target_row_indices[target_row_indices.index(row_index(coordinate[0]))]
                 seperation = index_difference - 1
-                if seperation >= 1:
+                if (largest_ship_size - 2) >= seperation >= 1:
                     for num in range(seperation):
                         next_coord = coord_down(current_coord)
                         if next_coord in targetted_coordinates and next_coord not in self.hit_coordinates:
@@ -541,7 +546,7 @@ class Computer(Player):
         if self.active_targets:
             options = []
             for coordinate in self.active_targets:
-                options.extend(battlefield.smart_targetting_1(coordinate, self.active_targets, self.targetted_coordinates))
+                options.extend(battlefield.smart_targetting_1(coordinate, self.active_targets, self.targetted_coordinates, player.fleet.values()))
             if options:
                 target_options.extend([option for option in options if option not in target_options])
                 return target_options
