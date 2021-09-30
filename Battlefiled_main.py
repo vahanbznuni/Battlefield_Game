@@ -34,7 +34,7 @@ def check_winner():
     return winner
 
 def current_turn_string(player):
-    """Return custom string indicating to the player who's turn it is (Player's or Computer's).
+    """Return custom string indicating to the player who's turn it is (main Player's (player1) or Computer's (player2)).
 
     Args:
       player: Player object, the Player who's turn it currently is.
@@ -48,7 +48,7 @@ def current_turn_string(player):
     return string
 
 def turn(player_x, player_y):
-    """Execute a turn, targetting the opposing player using target method of Player or Computer(Player) class/subclass.
+    """Execute a turn, targetting the opposing player using target method of Player/Computer(Player) class/subclass.
 
     Args:
       player_x: Player object, the Player who's turn it is to target the opposing Player.
@@ -60,7 +60,7 @@ def turn(player_x, player_y):
     player_x.target(player_y)
 
 def ready_to_play():
-    """print statement indicating that the game (i,e, first turn) is about to start and main player's Battlefiled."""
+    """print a statement indicating that the game (i.e. first turn) is about to start; and display main player's Battlefiled."""
     print(strings.line_str2 + NL*2 + strings.ready_str + NL)
     player1.battlefield.display()
 
