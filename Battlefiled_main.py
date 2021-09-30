@@ -1,3 +1,9 @@
+# BATTLEFIELD GAME. A 2-player Python Terminal Game of Battlefield.
+#
+# Created in 2021 by Vahan Bznuni for CodeAcademy Portfolio Project: "Terminal Game"
+# 
+# http://github.com/vahanbznuni/Battlefield-Game
+
 """
 Main Module. Controls main flow of the game.
  
