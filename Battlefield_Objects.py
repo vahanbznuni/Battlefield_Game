@@ -142,6 +142,27 @@ class Battlefield:
         if (coordinate[-1]) + 1 <= len(self.columns):
             return (coordinate[0], coordinate[-1] + 1)
 
+    def coord_opts_direction(self, coordinate, ship_size, direction_func):
+        """Return a list of coordinates of a ship of given size in a given direction, starting at given coordinate.
+        
+        Args:
+          coordinate (tuple): a coordinate.
+          ship_size (int): ship size.
+          direction_func: one of coord_up/down/left/right "direction" helper methods.
+        Returns:
+          a list of coordinates.
+        """
+        coords = [coordinate]
+        current_coord = coordinate
+        for num in range(ship_size - 1):
+            next_coord = direction_func(current_coord)
+            if self.grid[next_coord] == Battlefield.states[5]:
+                coords = None
+                break
+            coords.append(next_coord)
+            current_coord = next_coord
+        return coords
+    
     def next_targetted_coord(self, direction_func, coord, targetted_coordinates):
         """Find next coordinate on the grid, in a given direction, that has already been targetted (either hit or missed). 
 
@@ -150,7 +171,7 @@ class Battlefield:
           coord (tuple): a coordinate.
           targetted_coordinates (list): a list of targetted coordinates (either hit or missed).
         Returns:
-          The next coordinate (tuple), if any, in a given direction that has already been targetted.
+          The next coordinate (tuple), if any.
         """
         coord_up = self.coord_up                    
         coord_down = self.coord_down                   
@@ -233,100 +254,108 @@ class Battlefield:
         return target_size
     
     def coord_opts(self, coordinate, ship_type):
-        """--
+        """Return coordinate options for a ship placed starting at provcided coordinate, in all four directions.
 
         Args:
-        --
-        --
+          coordinate (tuple): a Coordinate
+          ship_type (str): name of the type of ship
         Returns:
-        --
+          a dictionary with keys identifying direction, and values as a list of coordinates of a ship placed in that directrion\
+              from the provided coordinate as a starting point, given there is enouth space.
         """
         ship_size = Ship.types[ship_type]
         options = {"Up: ": None, "Down: ": None, "Left: ": None, "Right: ": None, }
+        
         if self.row_index(coordinate) - (ship_size - 1) >= 0:
-            up_coords = [coordinate]
-            current_coord = coordinate
-            for num in range(ship_size - 1):
-                next_coord = self.coord_up(current_coord)
-                if self.grid[next_coord] == Battlefield.states[5]:
-                    up_coords = None
-                    break
-                up_coords.append(next_coord)
-                current_coord = next_coord
-            options["Up: "] = up_coords
+            options["Up: "] = self.coord_opts_direction(coordinate, ship_size, self.coord_up)
+        
         if self.row_index(coordinate) + (ship_size - 1) < len(self.rows):
-            down_coords = [coordinate]
-            current_coord = coordinate
-            for num in range(ship_size - 1):
-                next_coord = self.coord_down(current_coord)
-                if self.grid[next_coord] == Battlefield.states[5]:
-                    down_coords = None
-                    break
-                down_coords.append(next_coord)
-                current_coord = next_coord
-            options["Down: "] = down_coords
+            options["Down: "] = self.coord_opts_direction(coordinate, ship_size, self.coord_down)
+        
         if (coordinate[-1]) - (ship_size - 1) >= 1:
-            left_coords = [coordinate]
-            current_coord = coordinate
-            for num in range(ship_size - 1):
-                next_coord = self.coord_left(current_coord)
-                if self.grid[next_coord] == Battlefield.states[5]:
-                    left_coords = None
-                    break
-                left_coords.append(next_coord)
-                current_coord = next_coord
-            options["Left: "] = left_coords
+            options["Left: "] = self.coord_opts_direction(coordinate, ship_size, self.coord_left)
+        
         if (coordinate[-1]) + (ship_size - 1) <= len(self.columns):
-            right_coords = [coordinate]
-            current_coord = coordinate
-            for num in range(ship_size - 1):
-                next_coord = self.coord_right(current_coord)
-                if self.grid[next_coord] == Battlefield.states[5]:
-                    right_coords = None
-                    break
-                right_coords.append(next_coord)
-                current_coord = next_coord
-            options["Right: "] = right_coords
+            options["Right: "] = self.coord_opts_direction(coordinate, ship_size, self.coord_right)
+        
         return {key: value for (key, value) in options.items() if value != None}
     
     def gen_coords(self, ship_type):
+        """Generate coordinates for a given ship type, using user input.
+
+        Args:
+          ship_type (str): name of the type of ship/
+        Returns:
+          sorted list of valid coordinates of a ship of the provided type, starting on coordinate chosen by user\
+              and placed in the direction of the user's choosing.
+        Exceptions Raised:
+          BusyCoordinateException: when chosen coordinate already contains a ship
+          NotEnoughRoomException: when there is no room for any ship starting at chosen coordinate
+        """
         self.display_wrapped("Your")
+        
         ship_size = Ship.types[ship_type]
         coordinates = []
+        
+        #Prompt for user input of starting coordinate of a given ship type.
         input_str = obj_str.gen_coords_input1_str
         input1 = input(input_str.format("starting", str(ship_type), ship_size*"+"))
         start_coordinate = (input1[0].upper(), int(input1[1:]))
+        
+        #Raise exception if a ship already exist at input coordinate
         if self.grid[start_coordinate] == Battlefield.states[5]:
             raise BusyCoordinateException
-        else:
-            coordinates.append(start_coordinate)
-            print(NL)
-            copy_grid = self.grid.copy()
-            self.grid[start_coordinate] = "*"
-            input2_str_addon = obj_str.gen_coords_input2_str_addon
-            input2_str = input_str.format("ending", str(ship_type), ship_size*"+").replace("enter", "choose").replace(":", ".") + "\n" +\
-                input2_str_addon + NL*2
-            options = self.coord_opts(start_coordinate, ship_type)
-            if not options:
-                self.grid.update(copy_grid)
-                raise NotEnoughRoomException
-            else:
-                num = 1
-                for key in options.keys():
-                    last_coord = options[key][-1]
-                    input2_str += str(num) + " ({}): ".format(key[:-2]) + Battlefield.coord_to_str(last_coord) +"\n"
-                    self.grid[last_coord] = num
-                    num += 1
-                self.display()
-                print(NL)
-                input2 = input(input2_str)
-                self.grid.update(copy_grid)
-                for coord in list(options.values())[int(input2) - 1][1:]:
-                    coordinates.append(coord)
-                coordinates.sort()
-                return coordinates
+        coordinates.append(start_coordinate)
+        
+        print(NL)
+        #Backup copy of grid to be used to restore it back from temporary changes maide for purposes of visual aide in ship selection process.
+        copy_grid = self.grid.copy()
+        self.grid[start_coordinate] = "*"
+        
+        #Customizing string for next selection
+        input2_str_addon = obj_str.gen_coords_input2_str_addon
+        input2_str = input_str.format("ending", str(ship_type), ship_size*"+").replace("enter", "choose").replace(":", ".") + "\n" +\
+            input2_str_addon + NL*2
+        
+        #Obtain valid options for ship placement from starting coordinate. Raise exception if there is not enough room for any ship.
+        options = self.coord_opts(start_coordinate, ship_type)
+        if not options:
+            self.grid.update(copy_grid)
+            raise NotEnoughRoomException
+        
+        #Display options to user and prompt user to select option using a numerical identifier displayed
+        num = 1
+        for key in options.keys():
+            last_coord = options[key][-1]
+            input2_str += str(num) + " ({}): ".format(key[:-2]) + Battlefield.coord_to_str(last_coord) +"\n"
+            self.grid[last_coord] = num
+            num += 1
+        self.display()
+        print(NL)
+        input2 = input(input2_str)
+        
+        #Restore original grid
+        self.grid.update(copy_grid)
+        
+        #Add the rest of the coordinates (except for starting) from the chosen option to a list & return sorted list
+        for coord in list(options.values())[int(input2) - 1][1:]:
+            coordinates.append(coord)
+        coordinates.sort()
+        return coordinates
      
     def generate_ships(self):
+        """Call coordinate generator for each ship, check if coordinates are valid, and place ship on the player's Battlefield.
+
+        Returns:
+          Fleet (dict): with keys as names of ship type, and values as the ship (object).
+        
+        Exceptions Raised:
+          ValueError: for when coordinates are not entered; or option number is not entered, correctly as prompted.
+          KeyError: for when entered coordinates are out of range.
+          IndexError: for when coordinates are not entered; or option number is not entered, correctly as prompted.
+          BusyCoordinateException: for when there is already a ship at a chosen coordinate.
+          NotEnoughRoomException: for when there is no enough room for a ship to be placed at a chosen coordinate.
+        """
         fleet = {}
         for ship_type in Ship.types.keys():
             error_str = obj_str.error_str
