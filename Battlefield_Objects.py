@@ -15,9 +15,44 @@ from Battlefield_Strings import line_str1, line_str2, NL, continue_str, line_wra
 import random
 
 class Battlefield:
+    """Serves as each player's individual "Battlefield" - using a grid coordinate system containing data for ships placed by the player\
+        and otherwise tracking each coordinate's status (empty, untargetted ("healthy") ship, targetted & missed,  targetted and hit ship). 
+    
+    Includes functionality for displaying battlefiled to terminal, placing ships on battlefiled (based on user input),
+    and providing a muiltitude of helper funcitons that assist with the coordinate system, from generating coordinate 
+    options for ship placement (based on coordinate input from the player) to checking maximum clearance size of a given 
+    coordinate for evaluation as a valid target by smart targetting funcitonality of the Computer(Player) (sub)class.
+
+    Subclassed by ComputerBattlefield, which overrides ship placement for the computer, including coordinate generator
+    method (since it does not require user input), as well as the display funcitonality - so as not to display the computer's ships
+    to the player (player1) when otherwise displaying the computer's battlefiled to the main player.
+
+    Instance Variables:
+      rows: list, A list of alphabetical rows the Battlefield instance is comprised of 
+      columns: list, A list of columns the Battlefield instance is comprised of.
+      coordinates: list, A list of coordinates the Battlefield instance is comprised of.
+      grid: dictionary, The main data structure for the coordinate system, containing coordinates of the Battlefiled as\ 
+        keys, and the data for each coordinate indicating it's status ("state" - i.e. empty, hit, etc.) as values.
+      states: list, a class variable list containing all different possible statuses for a given grid coordinate. Whenever the state of a\
+          given coordinate needs to be accessed or overwrittene by a new state, it is accessed via the list, instead of being referenced\
+              explicitly.
+    Methods:
+      __init__, display, display_wrapped, coord_to_str, row_index, get_row, get_column, coord_up, coord_down, coord_left
+      coord_right, next_targetted_coord, horizontal_target_size, vertical_target_size, coord_opts, gen_coords, generate_ships
+    """
+    
     states = [None, 1, 2, 3, 4, "healthy", "targetted", "hit", "*", "#"]
+        #List of possible states for coordinates in grid
+        #Numbers 1-4 and star symbol (*) are used temporarily for interactive ship generation prompt.
+        #Hashtag symbol (#) is used for sunk ship coordinates.
 
     def __init__(self, num_rows, num_columns):
+        """initialize an instance of a Battlefield.
+        
+        Args:
+          num_rows (int): number of rows for the Battlefield's grid coordinate system.
+          num_columns (int): number of columns for the Battlefield's grid coordinate system.
+        """
         self.rows = [row for row in string.ascii_uppercase[:num_rows]]
         self.columns = [column for column in range(1, num_columns+1)]
         self.coordinates = []
@@ -27,6 +62,7 @@ class Battlefield:
         self.grid = {coordinate: None for coordinate in self.coordinates}
 
     def display(self):
+        """Display Battlefield to the terminal based on data contained in grid. **(Overridden by ComputerBattlefiled subclass)**."""
         print("   " + "  ".join([str(column) for column in self.columns]))
         for row_name in self.rows:
             row = []
@@ -55,6 +91,7 @@ class Battlefield:
             print(row_name + " " + "".join(row))
    
     def display_wrapped(self, string):
+        """Add visual formatting to display of the Battlefield (using seperator strings form strings module)."""
         print(line_str1)
         print(NL)
         print(battlefield_str.format(string))
@@ -64,45 +101,64 @@ class Battlefield:
     
     @staticmethod
     def coord_to_str(coordinate):
+        """Convert the provided coordinate (tuple) into a string."""
         return str(coordinate[0]) + str(coordinate[-1])
     
     def row_index(self, coordinate):
-            return self.rows.index(coordinate[0])
+        """Return the index, in the rows list, of the row the provided coordinate belongs to"""
+        return self.rows.index(coordinate[0])
 
     def get_row(self, coordinate):
+        """Return a list containing all the coordinates from the row that the provided coordinate belongs to."""
         row = []
         for column in self.columns:
             row.append((coordinate[0], column))
         return row
 
     def get_column(self, coordinate):
+        """Return a list containing all the coordinates from the column that the provided coordinate belongs to."""
         column = []
         for row in self.rows:
             column.append((row, coordinate[-1]))
         return column
 
     def coord_up(self, coordinate):
+        """Return the coordinate above (North) of the provided coordinate."""
         if self.row_index(coordinate) - 1 >= 0:
             return (self.rows[self.row_index(coordinate) - 1], coordinate[-1])
 
     def coord_down(self, coordinate):
+        """Return the coordinate below (South) of the provided coordinate."""
         if self.row_index(coordinate) + 1 < len(self.rows):
             return (self.rows[self.row_index(coordinate) + 1], coordinate[-1])
 
     def coord_left(self, coordinate):
+        """Return the coordinate to the left (West) of the provided coordinate."""
         if (coordinate[-1]) - 1 >= 1:
             return (coordinate[0], coordinate[-1] - 1)
 
     def coord_right(self, coordinate):
+        """Return the coordinate to the right (East) of the provided coordinate."""
         if (coordinate[-1]) + 1 <= len(self.columns):
             return (coordinate[0], coordinate[-1] + 1)
 
     def next_targetted_coord(self, direction_func, coord, targetted_coordinates):
+        """Find next coordinate on the grid, in a given direction, that has already been targetted (either hit or missed). 
+
+        Args:
+          direction_func (function): one of coord_up/down/left/right "direction" helper methods.
+          coord (tuple): a coordinate.
+          targetted_coordinates (list): a list of targetted coordinates (either hit or missed).
+        Returns:
+          The next coordinate (tuple), if any, in a given direction that has already been targetted.
+        """
         coord_up = self.coord_up                    
         coord_down = self.coord_down                   
         coord_left = self.coord_left                   
         coord_right = self.coord_right
         row_index = self.row_index
+        
+        #range_value (used with range function) is the measure of length until the border of the Battlefield in a given direction.
         if direction_func == coord_up:
             range_value = row_index(coord)
         elif direction_func == coord_down:
@@ -111,6 +167,7 @@ class Battlefield:
             range_value = coord[-1]
         elif direction_func == coord_right:
             range_value = len(self.columns) - coord[-1]
+        
         current_coord = coord
         if direction_func(coord) and direction_func(coord) not in targetted_coordinates:
             for num in range(range_value):
@@ -120,11 +177,20 @@ class Battlefield:
                 elif next_coord:
                     current_coord = next_coord
     
-    def horizontal_target_size(self, coord, targetted_coordinates):                  
+    def horizontal_target_size(self, coord, targetted_coordinates):
+        """Calculate maximum availble horizontal non-targetted space around a given coordinate (to determine if it is big enouth to hide a ship).
+
+        Args:
+          coord (tuple): a coordinate.
+          targetted_coordinates (list): a list of targetted coordinates (either hit or missed).
+        Returns:
+          the linear horizontal size (int) of adjascent available (non-targetted) space around the coordinate. 
+        """              
         coord_left = self.coord_left                   
         coord_right = self.coord_right
         left_border = self.next_targetted_coord(coord_left, coord, targetted_coordinates)
         right_border = self.next_targetted_coord(coord_right, coord, targetted_coordinates)
+        
         if left_border and right_border:
             difference = right_border[-1] - left_border[-1]
             target_size = difference - 1
@@ -139,11 +205,20 @@ class Battlefield:
         return target_size
     
     def vertical_target_size(self, coord, targetted_coordinates):
+        """Calculate maximum availble vertical non-targetted space around a given coordinate (to determine if it is big enouth to hide a ship).
+
+        Args:
+          coord (tuple): a coordinate.
+          targetted_coordinates (list): a list of targetted coordinates (either hit or missed).
+        Returns:
+          the linear vertical size (int) of adjascent available (non-targetted) space around the coordinate. 
+        """ 
         coord_up = self.coord_up                    
         coord_down = self.coord_down                   
         row_index = self.row_index
         top_border = self.next_targetted_coord(coord_up, coord, targetted_coordinates)
         bottom_border = self.next_targetted_coord(coord_down, coord, targetted_coordinates)
+        
         if top_border and bottom_border:
             difference = row_index(bottom_border) - row_index(top_border) 
             target_size = difference - 1
@@ -158,6 +233,14 @@ class Battlefield:
         return target_size
     
     def coord_opts(self, coordinate, ship_type):
+        """--
+
+        Args:
+        --
+        --
+        Returns:
+        --
+        """
         ship_size = Ship.types[ship_type]
         options = {"Up: ": None, "Down: ": None, "Left: ": None, "Right: ": None, }
         if self.row_index(coordinate) - (ship_size - 1) >= 0:
@@ -390,6 +473,7 @@ class Player:
         print(NL)
 
     def target(self, player):
+
         shot = 0
         last_shot_hit = False
         while shot < 1 or last_shot_hit:

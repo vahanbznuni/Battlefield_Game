@@ -1,6 +1,6 @@
 # BATTLEFIELD GAME. A 2-player Python Terminal Game of Battlefield.
 #
-# Created in 2021 by Vahan Bznuni. For CodeAcademy Portfolio Project: "Terminal Game"
+# Created in 2021 by Vahan Bznuni, for a CodeAcademy Portfolio Project: "Terminal Game"
 # 
 # http://github.com/vahanbznuni/Battlefield-Game
 
@@ -37,7 +37,7 @@ def current_turn_string(player):
     """Return custom string indicating to the player who's turn it is (main Player's (player1) or Computer's (player2)).
 
     Args:
-      player: Player object, the Player who's turn it currently is.
+      player (object): the Player who's turn it currently is.
     Returns:
       A customized string from the strings module to be printed, indicating current turn.
     """
@@ -48,11 +48,16 @@ def current_turn_string(player):
     return string
 
 def turn(player_x, player_y):
-    """Execute a turn, targetting the opposing player using target method of Player/Computer(Player) class/subclass.
+    """Execute a turn, targetting the opposing player by calling the target method of the player who's turn it is.
+
+    Targetting is preceded by:
+      input: asking playuer to press ENTER key to continue
+      print statement: letting player know who's turn it is
+      input: asking playuer to press ENTER key to continue
 
     Args:
-      player_x: Player object, the Player who's turn it is to target the opposing Player.
-      player_y: Player object, the opposing Player against whom the turn is being executed.
+      player_x (object): the Player who's turn it is to target the opposing Player.
+      player_y (object): the opposing Player against whom the turn is being executed.
     """
     input(strings.continue_str)  
     print(strings.line_str2 + NL*2 + str(current_turn_string(player_x)))
@@ -60,7 +65,7 @@ def turn(player_x, player_y):
     player_x.target(player_y)
 
 def ready_to_play():
-    """print a statement indicating that the game (i.e. first turn) is about to start; and display main player's Battlefiled."""
+    """print a statement indicating that the game (i.e. first turn) is about to start; and display main player's Battlefiled"""
     print(strings.line_str2 + NL*2 + strings.ready_str + NL)
     player1.battlefield.display()
 
@@ -78,7 +83,10 @@ def end_game():
     print(NL + strings.final_str1)
     input(NL + strings.final_str2)
 
+
 strings.intro_str()
+
+#Initialze players. Includes interactive ship placement by user.
 player1 = obj.Player()
 player2 = obj.Computer()
 
