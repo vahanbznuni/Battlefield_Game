@@ -281,7 +281,7 @@ class Battlefield:
         return {key: value for (key, value) in options.items() if value != None}
     
     def gen_coords(self, ship_type):
-        """Generate coordinates for a given ship type, using user input.
+        """Generate coordinates for a given ship type, using user input. **(Overridden by ComputerBattlefiled subclass)**
 
         Args:
           ship_type (str): name of the type of ship/
@@ -297,12 +297,10 @@ class Battlefield:
         ship_size = Ship.types[ship_type]
         coordinates = []
         
-        #Prompt for user input of starting coordinate of a given ship type.
+        #Prompt for user input of starting coordinate of a given ship type. Raise exception if a ship already exist at input coordinate.
         input_str = obj_str.gen_coords_input1_str
         input1 = input(input_str.format("starting", str(ship_type), ship_size*"+"))
         start_coordinate = (input1[0].upper(), int(input1[1:]))
-        
-        #Raise exception if a ship already exist at input coordinate
         if self.grid[start_coordinate] == Battlefield.states[5]:
             raise BusyCoordinateException
         coordinates.append(start_coordinate)
@@ -344,7 +342,8 @@ class Battlefield:
         return coordinates
      
     def generate_ships(self):
-        """Call coordinate generator for each ship, check if coordinates are valid, and place ship on the player's Battlefield.
+        """Call coordinate generator for each ship, check if coordinates are valid, and place ship on the player's Battlefield.\
+            **(Overridden by ComputerBattlefiled subclass)**
 
         Returns:
           Fleet (dict): with keys as names of ship type, and values as the ship (object).
@@ -377,21 +376,43 @@ class Battlefield:
         return fleet
 
 class ComputerBattlefield(Battlefield):
+    """ Subclasses parent in order to override ship placement funcitonality, replacing user input with random input, as well as battlefiled display\
+         - to hide computer ships."""
+
     def gen_coords(self, ship_type):
+        """Generate coordinates for a given ship type, using random input. **(Overrides parent class)**.
+
+        Args:
+          ship_type (str): name of the type of ship/
+        Returns:
+          sorted list of valid coordinates of a ship of the provided type, starting on a randomly generated coordinate\
+              and placed in a random direction.
+        Exceptions Raised:
+          BusyCoordinateException: when randomly chosen coordinate already contains a ship
+          NotEnoughRoomException: when there is no room for any ship starting at a randomly chosen coordinate
+        """
         coordinates = []
+        
+        #Randomly generate starting cooriundate. Raise exception if a ship already exist at randomly chosen coordinate
         start_coordinate = (self.rows[random.randint(0, len(self.rows)-1)], random.randint(1, len(self.columns)))
         if self.grid[start_coordinate] == Battlefield.states[5]:
             raise BusyCoordinateException
         coordinates.append(start_coordinate)
+        
+        #Obtain valid options for ship placement from starting coordinate. Raise exception if there is not enough room for any ship.
         options = list(self.coord_opts(start_coordinate, ship_type).values())
         if not options:
             raise NotEnoughRoomException
+        
+        #Add the rest of the coordinates (except for starting) from the chosen option to a list & return sorted list
         for coord in options[random.randint(0, len(options)-1)][1:]:
             coordinates.append(coord)
         coordinates.sort()
         return coordinates
 
     def display(self):
+        """Display Battlefield to the terminal based on data contained in grid, except for non-hit ship coordinates\
+            which are to remain hidden. **(Overrides parent class)**."""
         print("   " + "  ".join([str(column) for column in self.columns]))
         for row_name in self.rows:
             row = []
@@ -420,6 +441,19 @@ class ComputerBattlefield(Battlefield):
             print(row_name + " " + "".join(row))
 
     def generate_ships(self):
+        """Call coordinate generator for each ship, check if coordinates are valid, and place ship on the player's Battlefield.\
+            **(Overrides parent class)**.
+
+        The reason for overriding parent class is to remove print statements during exception handling, and 
+        to remove ValueError, KeyError, and IndexError from exception handling. 
+        
+        Returns:
+          Fleet (dict): with keys as names of ship type, and values as the ship (object).
+        
+        Exceptions Raised:
+          BusyCoordinateException: for when there is already a ship at a chosen coordinate.
+          NotEnoughRoomException: for when there is no enough room for a ship to be placed at a chosen coordinate.
+        """
         fleet = {}
         for ship_type in Ship.types.keys():
             error_str = obj_str.error_str
