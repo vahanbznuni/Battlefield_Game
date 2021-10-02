@@ -509,10 +509,8 @@ class Ship:
         return "Type " + str(self.type) + ". Coordinates: " + str(self.coordinates)
 
     def check_sunk(self):
-        """Check if the ship has sunk (if all of the ship's coordinates have been hit.
-        
-        If the ship has sunk, a stetement identifyuing the sunk ship is printed.
-        """
+        """Check if the ship has sunk (all ship coordinates hit). If so, update the sunk attribute to True,\
+             and print a stetement identifyuing the sunk ship"""
         hit_coordinates = 0
         battlefield = self.battlefield
         for coordinate in self.coordinates:
@@ -525,9 +523,27 @@ class Ship:
             print(NL*2 + line_wrap3(self.type + " HAS BEEN SUNK!!!!") + NL*2)
 
 class Player:
+    """Stores each player's individual Battlefield, a listing of their ships, as well as interagtive targetting functionality.
+
+    Subclassed by Computer(Player), which overrides __init__ (so that a ComputerBattlefiled is assigned instead of Battlefiled)
+    as an attribute), __repr__, target (replacing user-input targetting random selection from smart targetting options),
+    and adds functions that supoply the smart (AI) targetting: smart_targetting_1, adjascent_targets, target_options.
+
+    Class Variables:
+      player_count (int): number of players - increased with each new Player initialized.
+    Instance Variables:
+      id (int): The assigned number of player (increased by one for each new player)
+      battlefield (object): The player's personal Battlefield, on which the player's ships are placed.
+      fleet (dict): A dictionary listing player's ships type names (str) as keys, and ships (obnject) as values.
+      fleet_sunk (bool): Whether the player's entire fleet has been sunk
+    Methods:
+      __init__, __repr__, display_ships, target
+    """
+
     player_count = 0
 
     def __init__(self):
+        """initialize an instance of a Player."""
         Player.player_count += 1
         self.id = Player.player_count
         self.battlefield = Battlefield(10, 10)
@@ -538,9 +554,15 @@ class Player:
         # self.active_targets = []
 
     def __repr__(self):
+        """String representation of Player containing the Player's number (ex. Player 1)"""
         return "Player" + str(self.id)
     
     def check_fleet_sunk(self):
+        """Check if the entire fleet has been sunk. If so, update fleet_sunk attribute to True.
+        
+        Returns:
+          fleet_sunk (bool): (True if all ships have been sunk).
+        """
         sunk_ships = 0
         for ship in self.fleet.values():
             if ship.sunk:
@@ -550,26 +572,54 @@ class Player:
         return self.fleet_sunk
     
     def display_ships(self):
+        """Print a listing of all of the non-sunk ships of the player, and a visual representation of each ship."""
+        #Customization for caption to be displayed
         if self.id == 1:
             player_str = "YOUR"
         elif self.id == 2:
             player_str = "ENEMY"
+        
+        #Obtain non-sunk ships.
         ships = [ship for ship in self.fleet.values() if not ship.sunk]
+        
+        #print caption statement
         print(NL + line_str1 + NL)
         print(obj_str.display_ships_intro.format(player_str))
+        
+        #print each afloat ship's name, followed by a representation of correct size (with "+" character")
         num = 1
         for ship in ships:
             print(obj_str.display_ships_str_main.format(num, ship.type, "+"*ship.size), end="\n")
             num += 1
         print(NL)
 
+    @staticmethod
+    def display_targetting_results(player, coordinate, target_hit):
+        if target_hit:
+            result_str = NL*2 + line_wrap3(obj_str.ship_hit_str.format(str(coordinate))) + NL*2
+        else:
+            result_str = NL*2 + obj_str.empty_waters_str.format(str(coordinate)) + NL*2
+        print(NL*2 + obj_str.target_complete + NL)
+        player.battlefield.display()
+        print(result_str)
+    
     def target(self, player):
+        """target the opposing player's battlefield based on coordinates input by the user (intended for player1)
 
+        Args:
+          player (object): the being targetted
+        """
+        #Track targetting attempt, and whether last attempt was successful
         shot = 0
         last_shot_hit = False
+        
+        #if last attempt successful (target hit), the targetting repeats.
         while shot < 1 or last_shot_hit:
             battlefield = player.battlefield
             grid = player.battlefield.grid
+            #Display enemy ships, enemy battlefield, and prompt user input for cooordinate to target. 
+            #Raise exception if input coordinate has already been targetted.
+            #Handle exceptions and print error message. If exceptions occur, targetting is attempted again.
             while True:
                 player.display_ships()
                 input(continue_str)
@@ -590,25 +640,31 @@ class Player:
                     print(error_str.format(obj_str.index_error_str))
                 except TargettedCoordinateException:
                     print(error_str.format(obj_str.targetted_coord_error_str))
+            
+            shot += 1
+            #If no target hit, update coordinate status on the grid to show a targetted (missed) coordiante,\
+            #  display battlefield, print a status statement, and update attempt count & success tracket (exiting function)
             if not grid[coordinate]:
                 grid[coordinate] = Battlefield.states[6]
-                print(NL*2 + obj_str.target_complete + NL)
-                battlefield.display()
-                print(NL*2 + obj_str.empty_waters_str.format(str(coordinate)) + NL*2)
-                shot += 1
+                self.display_targetting_results(player, coordinate, False)
                 last_shot_hit = False
+            
+            #If a target was hit, update coordinate status on the grid to show a hit coordiante,\
+            #  display battlefield, print a status statement, and update attempt count & success tracket (exiting function)
             elif grid[coordinate] == Battlefield.states[5]:
                 grid[coordinate] = Battlefield.states[7]
-                print(NL*2 + obj_str.target_complete + NL)
-                battlefield.display()
-                print(NL*2 + line_wrap3(obj_str.ship_hit_str.format(str(coordinate))) + NL*2)
+                self.display_targetting_results(player, coordinate, True)
                 last_shot_hit = True
-                shot += 1
+                
+                #Check each enemy ship to see if they've been sunk (updating sunk attribute of the ship).
+                #Check if entire fleet has been sunk (updating fleet_sunk attribute of the player)
+                #If the fleet has been sunk, break out - to end the game
                 for ship in player.fleet.values():
                     if coordinate in ship.coordinates:
                         ship.check_sunk()
                 if player.check_fleet_sunk():
                     break
+                
                 input(continue_str)
                 print(line_str2 + NL*2 + target_str)
                 input(continue_str)
