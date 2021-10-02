@@ -28,12 +28,12 @@ class Battlefield:
     to the player (player1) when otherwise displaying the computer's battlefiled to the main player.
 
     Instance Variables:
-      rows: list, A list of alphabetical rows the Battlefield instance is comprised of 
-      columns: list, A list of columns the Battlefield instance is comprised of.
-      coordinates: list, A list of coordinates the Battlefield instance is comprised of.
-      grid: dictionary, The main data structure for the coordinate system, containing coordinates of the Battlefiled as\ 
+      rows (list): A list of alphabetical rows the Battlefield instance is comprised of 
+      columns (list): A list of columns the Battlefield instance is comprised of.
+      coordinates (list): A list of coordinates the Battlefield instance is comprised of.
+      grid (dict): The main data structure for the coordinate system, containing coordinates of the Battlefiled as\ 
         keys, and the data for each coordinate indicating it's status ("state" - i.e. empty, hit, etc.) as values.
-      states: list, a class variable list containing all different possible statuses for a given grid coordinate. Whenever the state of a\
+      states (list): A class variable list containing all different possible statuses for a given grid coordinate. Whenever the state of a\
           given coordinate needs to be accessed or overwrittene by a new state, it is accessed via the list, instead of being referenced\
               explicitly.
     Methods:
