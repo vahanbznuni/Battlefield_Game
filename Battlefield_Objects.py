@@ -144,6 +144,26 @@ class Battlefield:
         if (coordinate[-1]) + 1 <= len(self.columns):
             return (coordinate[0], coordinate[-1] + 1)
 
+    def get_range_value(self, direction_func, coordinate):
+        """Return measure of length until the border of the Battlefield in a given direction toe be used as a range value.
+                 
+        Args:
+          direction_func (function): one of coord_up/down/left/right "direction" helper methods.
+          coordinate (tuple): a coordinate.
+        Returns:
+          Value (int) representing length (range) until the bortder of the Battlefiled.
+        """
+        
+        if direction_func == self.coord_up:
+            range_value = self.row_index(coordinate)
+        elif direction_func == self.coord_down:
+            range_value = len(self.rows) - self.row_index(coordinate)
+        elif direction_func == self.coord_left:
+            range_value = coordinate[-1]
+        elif direction_func == self.coord_right:
+            range_value = len(self.columns) - coordinate[-1]
+        return range_value
+    
     def coord_opts_direction(self, coordinate, ship_size, direction_func):
         """Return a list of coordinates of a ship of given size in a given direction, starting at given coordinate.
         
@@ -175,22 +195,7 @@ class Battlefield:
         Returns:
           The next coordinate (tuple), if any.
         """
-        coord_up = self.coord_up                    
-        coord_down = self.coord_down                   
-        coord_left = self.coord_left                   
-        coord_right = self.coord_right
-        row_index = self.row_index
-        
-        #range_value (used with range function) is the measure of length until the border of the Battlefield in a given direction.
-        if direction_func == coord_up:
-            range_value = row_index(coord)
-        elif direction_func == coord_down:
-            range_value = len(self.rows) - row_index(coord)
-        elif direction_func == coord_left:
-            range_value = coord[-1]
-        elif direction_func == coord_right:
-            range_value = len(self.columns) - coord[-1]
-        
+        range_value = self.get_range_value(direction_func, coord)
         current_coord = coord
         if direction_func(coord) and direction_func(coord) not in targetted_coordinates:
             for num in range(range_value):
@@ -268,18 +273,19 @@ class Battlefield:
         ship_size = Ship.types[ship_type]
         options = {"Up: ": None, "Down: ": None, "Left: ": None, "Right: ": None, }
         
+        #In each direction (up/down/leftr/right), if a ship of a given size can fit, return coordinates for that option (direction).
         if self.row_index(coordinate) - (ship_size - 1) >= 0:
             options["Up: "] = self.coord_opts_direction(coordinate, ship_size, self.coord_up)
-        
+
         if self.row_index(coordinate) + (ship_size - 1) < len(self.rows):
             options["Down: "] = self.coord_opts_direction(coordinate, ship_size, self.coord_down)
-        
+
         if (coordinate[-1]) - (ship_size - 1) >= 1:
             options["Left: "] = self.coord_opts_direction(coordinate, ship_size, self.coord_left)
-        
+
         if (coordinate[-1]) + (ship_size - 1) <= len(self.columns):
             options["Right: "] = self.coord_opts_direction(coordinate, ship_size, self.coord_right)
-        
+
         return {key: value for (key, value) in options.items() if value != None}
     
     def gen_coords(self, ship_type):
@@ -379,7 +385,11 @@ class Battlefield:
 
 class ComputerBattlefield(Battlefield):
     """ Subclasses parent in order to override ship placement funcitonality, replacing user input with random input, as well as battlefiled display\
-         - to hide computer ships."""
+         - to hide computer ships.
+         
+    Methods:
+      display (overrides parent), gen_coords (overrides parent), generate_ships (overrides parent).
+    """
 
     def gen_coords(self, ship_type):
         """Generate coordinates for a given ship type, using random input. **(Overrides parent class)**.
@@ -480,7 +490,7 @@ class Ship:
       type (str): the name of the ship type, from the list of ship types.
       battlefield (object): a Battlefiled class bject - the Battlefiled to which the ship has been added.
       size (int): the number of coordinates that a ship occupipes on the Battlefiled grid.
-      sunk (bool): whether all of the ship's coordinates have been hit.
+      sunk (bool): True if all of the ship's coordinates have been hit.
     Methods:
       __init__, __repr__, check_sunk
     """
@@ -527,7 +537,7 @@ class Player:
 
     Subclassed by Computer(Player), which overrides __init__ (so that a ComputerBattlefiled is assigned instead of Battlefiled)
     as an attribute), __repr__, target (replacing user-input targetting random selection from smart targetting options),
-    and adds functions that supoply the smart (AI) targetting: smart_targetting_1, adjascent_targets, target_options.
+    and adds functions that supoply the smart (AI) targetting: non_adjascent_targets, adjascent_targets, target_options.
 
     Class Variables:
       player_count (int): number of players - increased with each new Player initialized.
@@ -535,7 +545,7 @@ class Player:
       id (int): The assigned number of player (increased by one for each new player)
       battlefield (object): The player's personal Battlefield, on which the player's ships are placed.
       fleet (dict): A dictionary listing player's ships type names (str) as keys, and ships (obnject) as values.
-      fleet_sunk (bool): Whether the player's entire fleet has been sunk
+      fleet_sunk (bool): True if the player's entire fleet has been sunk
     Methods:
       __init__, __repr__, display_ships, target
     """
@@ -554,7 +564,7 @@ class Player:
         # self.active_targets = []
 
     def __repr__(self):
-        """String representation of Player containing the Player's number (ex. Player 1)"""
+        """String representation of Player containing the Player's number (ex. Player 1)."""
         return "Player" + str(self.id)
     
     def check_fleet_sunk(self):
@@ -670,7 +680,26 @@ class Player:
                 input(continue_str)
 
 class Computer(Player):
+    """Stores each player's individual Battlefield, a listing of their ships, as well as interagtive targetting functionality.
+
+    Subclassed by Computer(Player), which overrides __init__ (so that a ComputerBattlefiled is assigned instead of Battlefiled)
+    as an attribute), __repr__, target (replacing user-input targetting random selection from smart targetting options),
+    and adds functions that supoply the smart (AI) targetting: non_adjascent_targets, adjascent_targets, target_options.
+
+    Instance Variables:
+      id (int): The assigned number of player (increased by one for each new player/computer)
+      battlefield (object): The computer's personal ComputerBattlefield, on which the computer's ships are placed.
+      fleet (dict): A dictionary listing computer's ships type names (str) as keys, and ships (object) as values.
+      fleet_sunk (bool): True if the computer's entire fleet has been sunk.
+      self.targetted_coordinates (list): list of targetted coordinates (hit or missed)
+      self.hit_coordinates (list): list of hit coordinates
+      self.active_targets (list): list of hit coordinates of a ships that have not yet fully been sunk
+    Methods:
+      __init__ (overrides parent), __repr__ (overrides parent), target (overrides parent), non_adjascent_targets, adjascent_targets, target_options
+    """
+    
     def __init__(self):
+        """initialize an instance of a Computer."""
         Player.player_count += 1
         self.id = Player.player_count
         self.battlefield = ComputerBattlefield(10, 10)
@@ -681,79 +710,113 @@ class Computer(Player):
         self.active_targets = []
 
     def __repr__(self):
+        """String representation of Computer."""
         return "Computer"
     
-    def smart_targetting_1(self, coordinate, player):
+    def non_adjascent_targets_inner(self, coordinate, player, direction_func, target_rows_or_columns, largest_ship_size):
+        """Helper method (inner logic) for non_adjascent_targets method.
+        
+        Check the seperation between a provided active target (coordinate belonging to a partially hit ship), and the next
+          active target within the same row or column, and return a list of coordinates in between the targets
+          if they are close enough to belong to the same ship.
+
+        Args:
+          coordinate (tuple): a coordinate.
+          player (object): 
+          direction_func (function): one of coord_up/down/left/right "direction" helper methods.
+          target_rows_or_colukmns (list): 
+          largest_ship_size (int):
+        Returns:
+          A list of coordinate options for targetting
+        """
+        options = []
+        row_index = player.battlefield.row_index
+        current_coord = coordinate
+        
+        #Determine if evaluating non-adjascent active targets in the same column (direction=right) or those in the same\
+        # row (direction=down), and calculate seperation between provided coordinate and next coordinate in the given direction
+        if direction_func == player.battlefield.coord_right:
+                target_columns = target_rows_or_columns
+                index_difference = target_columns[target_columns.index(coordinate[-1]) + 1] - coordinate[-1]
+        elif direction_func == player.battlefield.coord_down:
+                target_row_indices = target_rows_or_columns
+                index_difference = target_row_indices[target_row_indices.index(row_index(coordinate[0])) + 1] - row_index(coordinate[0])
+        seperation = index_difference - 1
+        
+        #If the non-adjascent active targets are close enough to potentially belong to a ship (as compared to the largest non-sunk ship),\
+        # append the coordinates in between to the options list and return it, 
+        # unless one of them has already been discovered to be void of ships.
+        if (largest_ship_size - 2) >= seperation >= 1:
+            for num in range(seperation):
+                next_coord = direction_func(current_coord)
+                if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
+                    options = None
+                    break
+                elif next_coord not in self.targetted_coordinates:
+                    options.append(next_coord)
+                current_coord = next_coord
+        return options
+    
+    def non_adjascent_targets(self, coordinate, player):
+        """Evaluate non-adjascent partially hit coordinates (active targets) for potentially belonging to a single ship,\
+            and return inner coordinates as targetting options, if so.
+
+        Args:
+          coordinate (tuple): a coordinate.
+          player (object): 
+        Returns:
+          A list of coordinate options for targetting
+        """
         battlefield = player.battlefield
         options = []                 
-        coord_down = battlefield.coord_down                                    
-        coord_right = battlefield.coord_right
         row_index = battlefield.row_index
         row = battlefield.get_row(coordinate)
         column = battlefield.get_column(coordinate)
+        
+        #Obtain active targets (partially hit ship coordinates) within the same row and same column
         targets_in_row = [target for target in self.active_targets if target in row]
         targets_in_column = [target for target in self.active_targets if target in column]
+        
         largest_ship_size = 0
         for ship in self.fleet.values():
             if not ship.sunk:
                 if ship.size >= largest_ship_size:
                     largest_ship_size = ship.size
+        
+        #If multiple active targets within the same row as provided coordinate, 
+        # check if they are close enough to possibly contain a single ship
         if len(targets_in_row) > 1:
             target_columns = [target[-1] for target in targets_in_row]
             target_columns.sort()
             if target_columns.index(coordinate[-1]) < len(target_columns) - 1:
-                row_options = []
-                current_coord = coordinate
-                index_difference = target_columns[target_columns.index(coordinate[-1]) + 1] - \
-                    target_columns[target_columns.index(coordinate[-1])]
-                seperation = index_difference - 1
-                if (largest_ship_size - 2) >= seperation >= 1:
-                    for num in range(seperation):
-                        next_coord = coord_right(current_coord)
-                        if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
-                            row_options = None
-                            break
-                        elif next_coord not in self.targetted_coordinates:
-                            row_options.append(next_coord)
-                        current_coord = next_coord
-                    options.extend([option for option in row_options if option not in options])    
+                row_options = self.non_adjascent_targets_inner(\
+                    coordinate, player, battlefield.coord_right, target_columns, largest_ship_size)
+                options.extend([option for option in row_options if option not in options])    
+        
+        #Same as above - except for column
         if len(targets_in_column) > 1:
             target_row_indices = [row_index(target) for target in targets_in_column]
             target_row_indices.sort()
             if target_row_indices.index(row_index(coordinate[0])) < len(target_row_indices) - 1:
-                column_options = []
-                current_coord = coordinate
-                index_difference = target_row_indices[target_row_indices.index(row_index(coordinate[0])) + 1] - \
-                    target_row_indices[target_row_indices.index(row_index(coordinate[0]))]
-                seperation = index_difference - 1
-                if (largest_ship_size - 2) >= seperation >= 1:
-                    for num in range(seperation):
-                        next_coord = coord_down(current_coord)
-                        if next_coord in self.targetted_coordinates and next_coord not in self.hit_coordinates:
-                            column_options = None
-                            break
-                        elif next_coord not in self.targetted_coordinates:
-                            column_options.append(next_coord)
-                        current_coord = next_coord
-                    options.extend([option for option in column_options if option not in options])
+                column_options = self.non_adjascent_targets_inner(\
+                    coordinate, player, battlefield.coord_down, target_row_indices, largest_ship_size)
+                options.extend([option for option in column_options if option not in options])
+
         return options
     
     def adjascent_targets(self, direction_func, coord, player):
-        battlefield = player.battlefield
+        """Check adjascent coordinate if it is also hit, and if so, return the next non-targetted coordinate in the same direction\
+            as a likely smart target option
+
+        Args:
+          direction_func (function): one of coord_up/down/left/right "direction" helper methods.
+          coord (tuple): a coordinate.
+          player (object): 
+        Returns:
+          list containing smart coordinate option for adjascent hit targets (next non-targetted coordinate over).
+        """
         options = []
-        coord_up = battlefield.coord_up                    
-        coord_down = battlefield.coord_down                   
-        coord_left = battlefield.coord_left                   
-        coord_right = battlefield.coord_right
-        row_index = battlefield.row_index
-        if direction_func == coord_up:
-            range_value = row_index(coord)
-        elif direction_func == coord_down:
-            range_value = len(battlefield.rows) - row_index(coord)
-        elif direction_func == coord_left:
-            range_value = coord[-1]
-        elif direction_func == coord_right:
-            range_value = len(battlefield.columns) - coord[-1]
+        range_value = player.battlefield.get_range_value(direction_func, coord)
         current_coord = coord
         if direction_func(coord) and direction_func(coord) in self.hit_coordinates:
             for num in range(range_value):
@@ -776,13 +839,15 @@ class Computer(Player):
         coord_down = battlefield.coord_down                   
         coord_left = battlefield.coord_left                   
         coord_right = battlefield.coord_right
+        
         if self.active_targets:
             options = []
             for coordinate in self.active_targets:
-                options.extend(self.smart_targetting_1(coordinate, player))
+                options.extend(self.non_adjascent_targets(coordinate, player))
             if options:
                 target_options.extend([option for option in options if option not in target_options])
                 return target_options
+            
             else:
                 for coordinate in self.active_targets:   
                     if coord_up(coordinate):
@@ -796,6 +861,7 @@ class Computer(Player):
                 if options:
                     target_options.extend([option for option in options if option not in target_options])
                     return target_options
+                
                 else:    
                     for coordinate in self.active_targets:
                         if coord_up(coordinate):
@@ -812,6 +878,7 @@ class Computer(Player):
                                 options.append(coord_right(coordinate))
                     target_options.extend([option for option in options if option not in target_options])
                     return target_options
+        
         else:
             available_targets = [coordinate for coordinate in battlefield.coordinates if not battlefield.grid[coordinate]\
                  or battlefield.grid[coordinate] == Battlefield.states[5]]  
@@ -823,9 +890,11 @@ class Computer(Player):
             options_preferred_E = []
             options_preferred_F = []
             options_preferred_G = []
+            
             preferred_lists_temp_1 = [options_preferred_A, options_preferred_B, options_preferred_C, options_preferred_D,\
                  options_preferred_E, options_preferred_F, options_preferred_G]
             preferred_lists_temp_2 = [options_preferred_A, options_preferred_B, options_preferred_C, options_preferred_D]
+            
             for coordinate in available_targets:
                 for ship in player.fleet.values():
                     if not ship.sunk:
@@ -833,6 +902,7 @@ class Computer(Player):
                              or ship.size <= battlefield.vertical_target_size(coordinate, self.targetted_coordinates):
                             if coordinate not in options:
                                 options.append(coordinate)
+            
             for option in options:
                 up_2x = (coord_up(option) and coord_up(option) in available_targets)\
                     and (coord_up(coord_up(option)) and coord_up(coord_up(option)) in available_targets)
@@ -876,6 +946,7 @@ class Computer(Player):
                     
             preferred_lists_1 = [x for x in preferred_lists_temp_1 if x]
             preferred_lists_2 = [x for x in preferred_lists_temp_2 if x]
+            
             if preferred_lists_1:
                 alternative_num = random.randint(0, 1)
                 if alternative_num == 0 or not preferred_lists_2:
