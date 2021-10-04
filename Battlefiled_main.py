@@ -20,8 +20,8 @@ The end_game function contains the closing statements - including winner\
      statement.
 """
 
-import Battlefield_Objects as obj
-import Battlefield_Strings as strings
+from Battlefield_Objects.Player import Player, Computer
+from Battlefield_Strings import Battlefield_Strings as strings
 NL ="\n"
 
 def check_winner():
@@ -96,8 +96,8 @@ def end_game():
 strings.intro_str()
 
 #Initialze players. Includes interactive ship placement by user.
-player1 = obj.Player()
-player2 = obj.Computer()
+player1 = Player()
+player2 = Computer()
 
 ready_to_play()
 play_game()

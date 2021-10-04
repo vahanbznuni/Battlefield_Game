@@ -12,7 +12,23 @@ The Object_strings class organizes the main strings used by the Objects module.
 """
 
 import textwrap
+import os
+dir_path = os.environ.get("HOME") + \
+    "\\OneDrive\\Documents\\Computer Science\\_6_Projects\\_1_Code Academy - CS101\\Final Project\\Battlefield Game\\Battlefield_Strings\\"
 NL = "\n"
+
+def exctract_str(text_file_name):
+    """Extract and return contents of a provided text file
+
+    Args:
+      text_file_name (str) : name (with extention) of text file within directory
+       of this module.
+    Returns:
+      string containint entire contents of provided text file
+    """
+    with open(dir_path + text_file_name, 'r') as filename:
+        text = filename.read()
+    return text
 
 #Seperator line string for visual formatting, using "=" character.
 line_str1 = \
@@ -74,55 +90,20 @@ name_str = "Please Enter Your Name: "
 continue_str = "\n\n>>>Please press ENTER key to continue<<<"
 
 #Introductory statements, describing the game.
-game_desc_str1 = \
-"""\n\nThis Battlefield game is a Python Terminal version of the classic \
-'Battlefield' game. 
-In this version, you (player 1) are playing against the computer.
-Each player (in this case you (player1) and the computer (player 2)) has their \
-own Battlefield
-of 10 x 10 squares (coordinates), and 5 ships of different lengths."""
-game_desc_str2 = \
-    """\n\nThis is what a sample Battlefield looks like:
-    
-       1  2  3  4  5  6  7  8  9  10
-    A [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]
-    B [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]
-    C [ ][ ][ ][ ][ ][ ][o][ ][ ][ ]
-    D [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]
-    E [ ][ ][ ][ ][+][X][+][+][ ][ ]
-    F [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]
-    G [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]
-    H [ ][ ][o][ ][ ][ ][ ][ ][ ][ ]
-    I [ ][ ][ ][ ][+][+][+][+][ ][ ]
-    J [ ][ ][ ][ ][+][+][+][+][ ][ ]
 
-    Key:
-    [ ] = Empty square
-    [+] = Occupied square (ship)
-    [o] = Targetted square (that was previously empty)
-    [X] = Targetted and hit square (that was occupied by a ship)"""
-game_desc_str3 = \
-    """\n\nThe following are the ships for each player:
 
-    1. Carrier      +++++   (length of 5 squares)
-    2. Battleship   ++++    (length of 4 squares)
-    3. Destroyer    +++     (length of 3 squares)
-    4. Submarine    +++     (length of 3 squares)
-    5. Patrol Boat  ++      (length of 2 squares)"""
-game_desc_str4 = \
-"""\n\nThe game will begin by each player (you and the computer) placing 
-their ships on their own battlefields. 
-Then, each player will take turns targetting the opposing player's battlefield.
-if the player succesfully hits a ship, that player will have the next turn. 
-If not, the other player will have the next turn.
 
-The game is won simply by sinking the entire fleet of the opposing player."""
+game_desc_str1 = exctract_str("game_desc_str1.txt")
+game_desc_str2 = exctract_str("game_desc_str2.txt")
+game_desc_str3 = exctract_str("game_desc_str3.txt")
+game_desc_str4 = exctract_str("game_desc_str4.txt")
 place_ships_str = "\n\nIt is time to place your ships! Are you ready?"
 ready_str = "Your ships are all set! Here is your Battlefield:"
 
 
 def intro_str():
-    """print opening and introductory statements, broken up with user input to continue."""
+    """print opening and introductory statements, \
+        broken up with user input to continue."""
     print(NL + line_wrap1(center_wrap(header_str)))
     print(NL*2 + line_wrap3(center_wrap(welcome_str)))
     input(continue_str)
