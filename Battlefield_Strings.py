@@ -12,7 +12,6 @@ The Object_strings class organizes the main strings used by the Objects module.
 """
 
 import textwrap
-
 NL = "\n"
 
 #Seperator line string for visual formatting, using "=" character.
