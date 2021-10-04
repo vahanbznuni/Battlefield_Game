@@ -339,122 +339,6 @@ class Battlefield:
 
         return {key: value for (key, value) in options.items() if value != None}
     
-    def gen_coords(self, ship_type):
-        """Generate coordinates for a given ship type, using user input.\
-             **(Overridden by ComputerBattlefiled subclass)**
-
-        Args:
-          ship_type (str): name of the type of ship/
-        Returns:
-          sorted list of valid coordinates of a ship of the provided type,
-            starting on coordinate chosen by user and placed in the direction of
-            the user's choosing.
-        Exceptions Raised:
-          BusyCoordinateException: when chosen coordinate already contains a ship
-          NotEnoughRoomException: when there is no room for any ship starting at
-            chosen coordinate
-        """
-        self.display_wrapped("Your")
-        
-        ship_size = Ship.types[ship_type]
-        coordinates = []
-        
-        #Prompt for user input of starting coordinate of a given ship type.
-        #  Raise exception if a ship already exist at input coordinate.
-        input_str = obj_str.gen_coords_input1_str
-        input1 = \
-            input(input_str.format("starting", str(ship_type), ship_size*"+"))
-        start_coordinate = (input1[0].upper(), int(input1[1:]))
-        if self.grid[start_coordinate] == Battlefield.states[5]:
-            raise BusyCoordinateException
-        coordinates.append(start_coordinate)
-        
-        print(NL)
-        #Backup copy of grid to be used to restore it back from temporary
-        #  changes maide for purposes of visual aide in ship selection process.
-        copy_grid = self.grid.copy()
-        self.grid[start_coordinate] = "*"
-        
-        #Customizing string for next selection
-        input2_str_addon = obj_str.gen_coords_input2_str_addon
-        input2_str = \
-            input_str.format(
-                "ending", str(ship_type), ship_size*"+").replace(
-                    "enter", "choose").replace(
-                        ":", ".")\
-                             + "\n" +input2_str_addon + NL*2
-        
-        #Obtain valid options for ship placement from starting coordinate.
-        #  Raise exception if there is not enough room for any ship.
-        options = self.coord_opts(start_coordinate, ship_type)
-        if not options:
-            self.grid.update(copy_grid)
-            raise NotEnoughRoomException
-        
-        #Display options to user and prompt user to select option using a
-        #  numerical identifier displayed
-        num = 1
-        for key in options.keys():
-            last_coord = options[key][-1]
-            input2_str += \
-                str(num) + " ({}): ".format(key[:-2]) + \
-                    Battlefield.coord_to_str(last_coord) +"\n"
-            self.grid[last_coord] = num
-            num += 1
-        self.display()
-        print(NL)
-        input2 = input(input2_str)
-        
-        #Restore original grid
-        self.grid.update(copy_grid)
-        
-        #Add the rest of the coordinates (except for starting) from the chosen
-        #  option to a list & return sorted list
-        for coord in list(options.values())[int(input2) - 1][1:]:
-            coordinates.append(coord)
-        coordinates.sort()
-        return coordinates
-     
-    def generate_ships(self):
-        """Call coordinate generator for each ship, check if coordinates are \
-            valid, and place ship on the player's Battlefield. \
-                **(Overridden by ComputerBattlefiled subclass)**
-
-        Returns:
-          Fleet (dict): with keys as names of ship type, 
-            and values as the ship (object).
-        
-        Exceptions Raised:
-          ValueError: for when coordinates are not entered; or option number
-            is not entered, correctly as prompted.
-          KeyError: for when entered coordinates are out of range.
-          IndexError: for when coordinates are not entered; or option number 
-           is not entered, correctly as prompted.
-          BusyCoordinateException: for when there is already a ship at a chosen 
-            coordinate.
-          NotEnoughRoomException: for when there is no enough room for a ship to
-            be placed at a chosen coordinate.
-        """
-        fleet = {}
-        for ship_type in Ship.types.keys():
-            error_str = obj_str.error_str
-            while True:
-                try:
-                    ship = Ship(self.gen_coords(ship_type), ship_type, self)
-                    break
-                except ValueError:
-                    print(error_str.format(obj_str.value_error_str))
-                except KeyError:
-                    print(error_str.format(obj_str.key_error_str))
-                except IndexError:
-                    print(error_str.format(obj_str.index_error_str))
-                except BusyCoordinateException:
-                    print(error_str.format(obj_str.busy_coord_error_str))
-                except NotEnoughRoomException:
-                    print(error_str.format(obj_str.not_enough_room_error_str))
-            fleet[ship_type] = ship
-        return fleet
-
 class ComputerBattlefield(Battlefield):
     """ Subclasses parent in order to override ship placement funcitonality, \
         replacing user input with random input, as well as battlefiled display\
@@ -464,47 +348,6 @@ class ComputerBattlefield(Battlefield):
       display (overrides parent), gen_coords (overrides parent), generate_ships 
         (overrides parent).
     """
-
-    def gen_coords(self, ship_type):
-        """Generate coordinates for a given ship type, using random input. \
-            **(Overrides parent class)**.
-
-        Args:
-          ship_type (str): name of the type of ship/
-        Returns:
-          sorted list of valid coordinates of a ship of the provided type, 
-           starting on a randomly generated coordinate and placed in a random 
-           direction.
-        Exceptions Raised:
-          BusyCoordinateException: when randomly chosen coordinate already
-            contains a ship
-          NotEnoughRoomException: when there is no room for any ship starting at
-            a randomly chosen coordinate
-        """
-        coordinates = []
-        
-        #Randomly generate starting cooriundate. Raise exception if a ship
-        #  already exist at randomly chosen coordinate
-        start_coordinate = \
-            (self.rows[random.randint(0, len(self.rows)-1)], \
-                random.randint(1, len(self.columns)))
-        if self.grid[start_coordinate] == Battlefield.states[5]:
-            raise BusyCoordinateException
-        coordinates.append(start_coordinate)
-        
-        #Obtain valid options for ship placement from starting coordinate.
-        #  Raise exception if there is not enough room for any ship.
-        options = list(self.coord_opts(start_coordinate, ship_type).values())
-        if not options:
-            raise NotEnoughRoomException
-        
-        #Add the rest of the coordinates (except for starting) from the chosen
-        #  option to a list & return sorted list
-        for coord in options[random.randint(0, len(options)-1)][1:]:
-            coordinates.append(coord)
-        coordinates.sort()
-        return coordinates
-
     def display(self):
         """Display Battlefield to the terminal based on data contained in grid,\
              except for non-hit ship coordinates which are to remain hidden. \
@@ -535,38 +378,6 @@ class ComputerBattlefield(Battlefield):
                     elif self.grid[key]==Battlefield.states[9]:
                         row.append("[#]")                    
             print(row_name + " " + "".join(row))
-
-    def generate_ships(self):
-        """Call coordinate generator for each ship, check if coordinates are\
-             valid, and place ship on the player's Battlefield. \
-                 **(Overrides parent class)**.
-
-        The reason for overriding parent class is to remove print statements
-        during exception handling, and to remove ValueError, KeyError, and
-        IndexError from exception handling. 
-        
-        Returns:
-          Fleet (dict): with keys as names of ship type, and values as the ship
-            (object).
-        Exceptions Raised:
-          BusyCoordinateException: for when there is already a ship at a chosen
-            coordinate.
-          NotEnoughRoomException: for when there is no enough room for a ship
-            to be placed at a chosen coordinate.
-        """
-        fleet = {}
-        for ship_type in Ship.types.keys():
-            error_str = obj_str.error_str
-            while True:
-                try:
-                    ship = Ship(self.gen_coords(ship_type), ship_type, self)
-                    break
-                except BusyCoordinateException as a:
-                    pass
-                except NotEnoughRoomException as b:
-                    pass
-            fleet[ship_type] = ship
-        return fleet
 
 class Ship:
     """contains data structure(s) relating to each ship, including its\
@@ -658,7 +469,7 @@ class Player:
         Player.player_count += 1
         self.id = Player.player_count
         self.battlefield = Battlefield(10, 10)
-        self.fleet = self.battlefield.generate_ships()
+        self.fleet = self.generate_ships()
         self.fleet_sunk = False
         # self.targetted_coordinates = []
         # self.hit_coordinates = []
@@ -668,6 +479,122 @@ class Player:
         """String representation of Player containing the Player's \
             number (ex. Player 1)."""
         return "Player" + str(self.id)
+
+    def gen_coords(self, ship_type):
+        """Generate coordinates for a given ship type, using user input.\
+             **(Overridden by Computer subclass)**
+
+        Args:
+          ship_type (str): name of the type of ship/
+        Returns:
+          sorted list of valid coordinates of a ship of the provided type,
+            starting on coordinate chosen by user and placed in the direction of
+            the user's choosing.
+        Exceptions Raised:
+          BusyCoordinateException: when chosen coordinate already contains a ship
+          NotEnoughRoomException: when there is no room for any ship starting at
+            chosen coordinate
+        """
+        self.battlefield.display_wrapped("Your")
+        
+        ship_size = Ship.types[ship_type]
+        coordinates = []
+        
+        #Prompt for user input of starting coordinate of a given ship type.
+        #  Raise exception if a ship already exist at input coordinate.
+        input_str = obj_str.gen_coords_input1_str
+        input1 = \
+            input(input_str.format("starting", str(ship_type), ship_size*"+"))
+        start_coordinate = (input1[0].upper(), int(input1[1:]))
+        if self.battlefield.grid[start_coordinate] == Battlefield.states[5]:
+            raise BusyCoordinateException
+        coordinates.append(start_coordinate)
+        
+        print(NL)
+        #Backup copy of grid to be used to restore it back from temporary
+        #  changes maide for purposes of visual aide in ship selection process.
+        copy_grid = self.battlefield.grid.copy()
+        self.battlefield.grid[start_coordinate] = "*"
+        
+        #Customizing string for next selection
+        input2_str_addon = obj_str.gen_coords_input2_str_addon
+        input2_str = \
+            input_str.format(
+                "ending", str(ship_type), ship_size*"+").replace(
+                    "enter", "choose").replace(
+                        ":", ".")\
+                             + "\n" +input2_str_addon + NL*2
+        
+        #Obtain valid options for ship placement from starting coordinate.
+        #  Raise exception if there is not enough room for any ship.
+        options = self.battlefield.coord_opts(start_coordinate, ship_type)
+        if not options:
+            self.battlefield.grid.update(copy_grid)
+            raise NotEnoughRoomException
+        
+        #Display options to user and prompt user to select option using a
+        #  numerical identifier displayed
+        num = 1
+        for key in options.keys():
+            last_coord = options[key][-1]
+            input2_str += \
+                str(num) + " ({}): ".format(key[:-2]) + \
+                    Battlefield.coord_to_str(last_coord) +"\n"
+            self.battlefield.grid[last_coord] = num
+            num += 1
+        self.battlefield.display()
+        print(NL)
+        input2 = input(input2_str)
+        
+        #Restore original grid
+        self.battlefield.grid.update(copy_grid)
+        
+        #Add the rest of the coordinates (except for starting) from the chosen
+        #  option to a list & return sorted list
+        for coord in list(options.values())[int(input2) - 1][1:]:
+            coordinates.append(coord)
+        coordinates.sort()
+        return coordinates
+     
+    def generate_ships(self):
+        """Call coordinate generator for each ship type, check if coordinates\
+             are valid, and generate ship \
+                 **(Overridden by Computer subclass)**
+
+        Returns:
+          Fleet (dict): with keys as names of ship type, 
+            and values as the ship (object).
+        
+        Exceptions Raised:
+          ValueError: for when coordinates are not entered; or option number
+            is not entered, correctly as prompted.
+          KeyError: for when entered coordinates are out of range.
+          IndexError: for when coordinates are not entered; or option number 
+           is not entered, correctly as prompted.
+          BusyCoordinateException: for when there is already a ship at a chosen 
+            coordinate.
+          NotEnoughRoomException: for when there is no enough room for a ship to
+            be placed at a chosen coordinate.
+        """
+        fleet = {}
+        for ship_type in Ship.types.keys():
+            error_str = obj_str.error_str
+            while True:
+                try:
+                    ship = Ship(self.gen_coords(ship_type), ship_type, self)
+                    break
+                except ValueError:
+                    print(error_str.format(obj_str.value_error_str))
+                except KeyError:
+                    print(error_str.format(obj_str.key_error_str))
+                except IndexError:
+                    print(error_str.format(obj_str.index_error_str))
+                except BusyCoordinateException:
+                    print(error_str.format(obj_str.busy_coord_error_str))
+                except NotEnoughRoomException:
+                    print(error_str.format(obj_str.not_enough_room_error_str))
+            fleet[ship_type] = ship
+        return fleet
     
     def check_fleet_sunk(self):
         """Check if the entire fleet has been sunk. If so, update fleet_sunk \
@@ -841,6 +768,78 @@ class Computer(Player):
         """String representation of Computer."""
         return "Computer"
     
+    def gen_coords(self, ship_type):
+        """Generate coordinates for a given ship type, using random input. \
+            **(Overrides parent class)**.
+
+        Args:
+          ship_type (str): name of the type of ship/
+        Returns:
+          sorted list of valid coordinates of a ship of the provided type, 
+           starting on a randomly generated coordinate and placed in a random 
+           direction.
+        Exceptions Raised:
+          BusyCoordinateException: when randomly chosen coordinate already
+            contains a ship
+          NotEnoughRoomException: when there is no room for any ship starting at
+            a randomly chosen coordinate
+        """
+        coordinates = []
+        
+        #Randomly generate starting cooriundate. Raise exception if a ship
+        #  already exist at randomly chosen coordinate
+        start_coordinate = \
+            (self.battlefield.rows[random.randint(0, len(self.rows)-1)], \
+                random.randint(1, len(self.columns)))
+        if self.battlefield.grid[start_coordinate] == Battlefield.states[5]:
+            raise BusyCoordinateException
+        coordinates.append(start_coordinate)
+        
+        #Obtain valid options for ship placement from starting coordinate.
+        #  Raise exception if there is not enough room for any ship.
+        options = list(
+            self.battlefield.coord_opts(start_coordinate, ship_type).values())
+        if not options:
+            raise NotEnoughRoomException
+        
+        #Add the rest of the coordinates (except for starting) from the chosen
+        #  option to a list & return sorted list
+        for coord in options[random.randint(0, len(options)-1)][1:]:
+            coordinates.append(coord)
+        coordinates.sort()
+        return coordinates
+
+    def generate_ships(self):
+        """Call coordinate generator for each ship, check if coordinates are\
+             valid, and place ship on the player's Battlefield. \
+                 **(Overrides parent class)**.
+
+        The reason for overriding parent class is to remove print statements
+        during exception handling, and to remove ValueError, KeyError, and
+        IndexError from exception handling. 
+        
+        Returns:
+          Fleet (dict): with keys as names of ship type, and values as the ship
+            (object).
+        Exceptions Raised:
+          BusyCoordinateException: for when there is already a ship at a chosen
+            coordinate.
+          NotEnoughRoomException: for when there is no enough room for a ship
+            to be placed at a chosen coordinate.
+        """
+        fleet = {}
+        for ship_type in Ship.types.keys():
+            while True:
+                try:
+                    ship = Ship(self.gen_coords(ship_type), ship_type, self)
+                    break
+                except BusyCoordinateException as a:
+                    pass
+                except NotEnoughRoomException as b:
+                    pass
+            fleet[ship_type] = ship
+        return fleet
+
     def non_adjascent_targets_inner(
         self, coordinate, player, direction_func,
             target_rows_or_columns, largest_ship_size):
