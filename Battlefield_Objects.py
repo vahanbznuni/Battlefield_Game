@@ -1,17 +1,18 @@
 """
-Objects Module. Contains all the classes of the game, which contain all data,\
+Objects Module. Contains all the main classes of the game, which contain all data,\
      display, interactivity, and internal game funcitonality elements.
  
 The Battlefield class contains the main data structure(s) for players' 
-  Battlefields'; display functionality, and interactive ship placement for player.
-The ComputerBattlefield subclass of Battlefield class overrides display and ship
-  placement functionality of the parent class (custumized for computer).
-The Ship class contains data structure(s) relating to each ship, including its
-  coordinates, it's name/type, and it's health status.
+  "Battlefield" (coordinate system and ship positions); various helper functions
+  for accesing and processing the data, and display (to Terminal) functionality.
+The ComputerBattlefield subclass of Battlefield class overrides the display 
+  functionality of the parent class (to hide computer ships).
+The Ship class contains data relating to each ship, including its coordinates, 
+  its name/type, and its health status.
 The Player class stores each player's individual Battlefield, a listing of their 
-  ships, as well as interagtive targetting functionality.
-The Computer subclass of Player overrides targetting functionality and related 
-  attributes/methods of parent class (custumized for computer).
+  ships; contains interagtive ship placement and targetting functionality.
+The Computer subclass of Player overrides the ship placement and targetting
+  functionality of parent class (custumized for AI).
 The InputException subclass of the built-in Exception class - as well as 
   subclasses of InputException - assist with the game's exception handling.
 """
@@ -24,23 +25,19 @@ import random
 class Battlefield:
     """Serves as each player's individual "Battlefield"
     
-    Uses a grid coordinate system, containing data for ships placed by the player
-    and otherwise tracking each coordinate's status (empty, untargetted ("healthy")
-    ship, targetted & missed, targetted and hit ship). 
+    Uses a grid coordinate system, and tracking each coordinate's status (empty,
+    untargetted ("healthy") ship, targetted & missed, targetted and hit ship). 
     
-    Includes functionality for displaying battlefiled to terminal, placing ships
-    on battlefiled (based on user input), and providing a muiltitude of helper
-    funcitons that assist with the coordinate system, from generating coordinate 
-    options for ship placement (based on coordinate input from the player) to
-    checking maximum clearance size of a given zcoordinate for evaluation as
-    a valid target by smart targetting funcitonality of the Computer(Player)
-    (sub)class.
+    Includes functionality for displaying battlefiled to terminal and providing
+    a muiltitude of helper funcitons that assist with the coordinate system, from 
+    generating coordinate options for ship placement (based on input from either 
+    Player or Computer classes) to checking maximum clearance size of a given 
+    coordinate for evaluation as a valid target for smart targetting funcitonality 
+    of the Computer class.
 
-    Subclassed by ComputerBattlefield, which overrides ship placement for the
-    computer, including coordinate generator method (since it does not require
-    user input), as well as the display funcitonality - so as not to display
-    the computer's ships to the player (player1) when otherwise displaying the
-    computer's battlefiled to the main player.
+    Subclassed by ComputerBattlefield, which overrides the display funcitonality,
+    so as not to display the computer's ships to the user (player1) 
+    when otherwise displaying the computer's battlefiled.
 
     Class variables:
       states (list): possible statuses ("states") for coordinates in grid
@@ -56,9 +53,9 @@ class Battlefield:
         instead of being referenced explicitly.
     Methods:
       __init__, display, display_wrapped, coord_to_str, row_index, get_row,
-      get_column, coord_up, coord_down, coord_left, coord_right,
-      next_targetted_coord, horizontal_target_size, vertical_target_size,
-      coord_opts, gen_coords, generate_ships
+      get_column, coord_up, coord_down, coord_left, coord_right, get_range_value,
+      coord_opts_direction, next_targetted_coord, horizontal_target_size, 
+      vertical_target_size, coord_opts
     """
     
     states = [None, 1, 2, 3, 4, "healthy", "targetted", "hit", "*", "#"]
@@ -340,13 +337,11 @@ class Battlefield:
         return {key: value for (key, value) in options.items() if value != None}
     
 class ComputerBattlefield(Battlefield):
-    """ Subclasses parent in order to override ship placement funcitonality, \
-        replacing user input with random input, as well as battlefiled display\
-         - to hide computer ships.
+    """ Subclasses parent in order to override battlefiled display, 
+      hiding computer ships fomr the user.
          
     Methods:
-      display (overrides parent), gen_coords (overrides parent), generate_ships 
-        (overrides parent).
+      display (overrides parent)
     """
     def display(self):
         """Display Battlefield to the terminal based on data contained in grid,\
@@ -440,12 +435,14 @@ class Ship:
 
 class Player:
     """Stores each player's individual Battlefield, a listing of their ships, \
-        as well as interagtive targetting functionality.
+        as well as interagtive ship placement abd targetting functionality.
 
     Subclassed by Computer(Player), which overrides __init__ (so that a
     ComputerBattlefiled is assigned instead of Battlefiled as an attribute),
+    gen_coords (to replace user prompt with random input for computer),
+    generate_ships (to customize exception handling; ex. removing error statements),
     __repr__, target (replacing user-input targetting random selection from
-    smart targetting options), and adds functions that supoply the smart
+    smart targetting options), and adds functions that supply the smart
     (AI) targetting: non_adjascent_targets, adjascent_targets, target_options.
 
     Class Variables:
@@ -459,7 +456,8 @@ class Player:
         and ships (obnject) as values.
       fleet_sunk (bool): True if the player's entire fleet has been sunk
     Methods:
-      __init__, __repr__, display_ships, target
+      __init__, __repr__, , gen_coords, generate_ships, check_fleet_sunk, 
+      display_ships, display_targetting_results, target
     """
 
     player_count = 0
@@ -728,11 +726,13 @@ class Computer(Player):
     """Stores each player's individual Battlefield, a listing of their ships, \
         as well as interagtive targetting functionality.
 
-    Subclassed by Computer(Player), which overrides __init__ (so that a 
-    ComputerBattlefiled is assigned instead of Battlefiled) as an attribute), 
+    Overrides the following from parent class: __init__ (so that a
+    ComputerBattlefiled is assigned instead of Battlefiled as an attribute),
+    gen_coords (to replace user prompt with random input for computer),
+    generate_ships (to customize exception handling; ex. removing error statements),
     __repr__, target (replacing user-input targetting random selection from
-    smart targetting options), and adds functions that supoply the smart (AI)
-    targetting: non_adjascent_targets, adjascent_targets, target_options.
+    smart targetting options), and adds functions that supply the smart
+    (AI) targetting: non_adjascent_targets, adjascent_targets, target_options.
 
     Instance Variables:
       id (int): The assigned number of player (increased by one for each new
@@ -749,6 +749,7 @@ class Computer(Player):
         have not yet fully been sunk
     Methods:
       __init__ (overrides parent), __repr__ (overrides parent), 
+      gen_coords (overrides parent), generate_ships (overrides parent), 
       target (overrides parent), non_adjascent_targets, adjascent_targets,
       target_options
     """
