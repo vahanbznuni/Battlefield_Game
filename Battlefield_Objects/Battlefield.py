@@ -11,7 +11,7 @@ The ComputerBattlefield subclass of Battlefield class overrides the display
 
 import string
 from Battlefield_Strings.Battlefield_Strings import \
-    line_str1, NL, object_strings as obj_str
+    NL, Formatting, DisplayStrings
 
 class Battlefield:
     """Serves as each player's individual "Battlefield"
@@ -103,9 +103,9 @@ class Battlefield:
     def display_wrapped(self, string):
         """Add visual formatting to display of the Battlefield\
              (using seperator strings form strings module)."""
-        print(line_str1)
+        print(Formatting.line_str1)
         print(NL)
-        print(obj_str.battlefield_str.format(string))
+        print(DisplayStrings.battlefield_str.format(string))
         print(NL)
         self.display()
         print(NL)

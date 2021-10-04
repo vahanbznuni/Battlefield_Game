@@ -5,9 +5,8 @@ The Ship class contains data relating to each ship, including its coordinates,
   its name/type, and its health status.
 """
 
-
 from Battlefield_Objects.Battlefield import Battlefield
-from Battlefield_Strings.Battlefield_Strings import NL, line_wrap3
+from Battlefield_Strings.Battlefield_Strings import NL, Formatting
 
 class Ship:
     """contains data structure(s) relating to each ship, including its\
@@ -51,7 +50,8 @@ class Ship:
 
     def __repr__(self):
         """String representation of Ship containing it's type and coordinates"""
-        return "Type " + str(self.type) + ". Coordinates: " + str(self.coordinates)
+        return "Type " + str(self.type) + \
+          ". Coordinates: " + str(self.coordinates)
 
     def check_sunk(self):
         """Check if the ship has sunk (all ship coordinates hit). \
@@ -66,4 +66,5 @@ class Ship:
             self.sunk = True
             for coordinate in self.coordinates:
                 battlefield.grid[coordinate] = Battlefield.states[9]
-            print(NL*2 + line_wrap3(self.type + " HAS BEEN SUNK!!!!") + NL*2)
+            print(NL*2 + Formatting.line_wrap3(
+              self.type + " HAS BEEN SUNK!!!!") + NL*2)

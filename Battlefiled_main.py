@@ -49,9 +49,9 @@ def current_turn_string(player):
            indicating current turn.
     """
     if player == player1:
-        string = strings.object_strings.target_str
+        string = strings.TargettingStrings.target_str
     elif player == player2:
-        string = strings.object_strings.incoming_str
+        string = strings.TargettingStrings.incoming_str
     return string
 
 def turn(player_x, player_y):
@@ -68,14 +68,16 @@ def turn(player_x, player_y):
       player_y (object): the opposing Player against.
     """
     input(strings.continue_str)  
-    print(strings.line_str2 + NL*2 + str(current_turn_string(player_x)))
+    print(strings.Formatting.line_str2 + \
+        NL*2 + str(current_turn_string(player_x)))
     input(strings.continue_str)
     player_x.target(player_y)
 
 def ready_to_play():
     """print a statement indicating that the game (i.e. first turn) is about\
          to start; and display main player's Battlefiled"""
-    print(strings.line_str2 + NL*2 + strings.ready_str + NL)
+    print(strings.Formatting.line_str2 + NL*2 + \
+        strings.OpeningStatements.ready_str + NL)
     player1.battlefield.display()
 
 def play_game():
@@ -87,18 +89,21 @@ def play_game():
 
 def end_game():
     """Declare the winner and print ending statements."""
-    print(strings.winner_str.format(check_winner()))
-    print(NL*2 + strings.final_str3)
-    print(NL + strings.final_str1)
-    input(NL + strings.final_str2)
+    print(strings.ClosingStatements.winner_str.format(check_winner()))
+    print(NL*2 + strings.ClosingStatements.final_str3)
+    print(NL + strings.ClosingStatements.final_str1)
+    input(NL + strings.ClosingStatements.final_str2)
 
+#-----------------------------------------------------------------------------
 
-strings.intro_str()
+#Start Game. Opening Statements.
+strings.OpeningStatements.intro_str()
 
 #Initialze players. Includes interactive ship placement by user.
 player1 = Player()
 player2 = Computer()
 
+#Main Sequence of Game & Ending.
 ready_to_play()
 play_game()
 end_game()

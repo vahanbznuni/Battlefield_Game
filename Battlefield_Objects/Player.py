@@ -11,7 +11,8 @@ The Computer subclass of Player overrides the ship placement and targetting
 from Battlefield_Objects.Battlefield import Battlefield, ComputerBattlefield
 from Battlefield_Objects.Ship import Ship
 from Battlefield_Strings.Battlefield_Strings import \
-    line_str1, line_str2, NL, continue_str, line_wrap3, object_strings as obj_str
+    NL, continue_str, Formatting, DisplayStrings, ShipPLacementStrings, \
+        TargettingStrings, ErrorStrings
 from Battlefield_Objects.InputExceptions import \
     BusyCoordinateException, TargettedCoordinateException, NotEnoughRoomException
 import random
@@ -83,7 +84,7 @@ class Player:
         
         #Prompt for user input of starting coordinate of a given ship type.
         #  Raise exception if a ship already exist at input coordinate.
-        input_str = obj_str.gen_coords_input1_str
+        input_str = ShipPLacementStrings.gen_coords_input1_str
         input1 = \
             input(input_str.format("starting", str(ship_type), ship_size*"+"))
         start_coordinate = (input1[0].upper(), int(input1[1:]))
@@ -98,7 +99,7 @@ class Player:
         self.battlefield.grid[start_coordinate] = "*"
         
         #Customizing string for next selection
-        input2_str_addon = obj_str.gen_coords_input2_str_addon
+        input2_str_addon = ShipPLacementStrings.gen_coords_input2_str_addon
         input2_str = \
             input_str.format(
                 "ending", str(ship_type), ship_size*"+").replace(
@@ -159,22 +160,22 @@ class Player:
         """
         fleet = {}
         for ship_type in Ship.types.keys():
-            error_str = obj_str.error_str
+            error_str = ErrorStrings.error_str
             while True:
                 try:
                     ship = Ship(
                         self.gen_coords(ship_type), ship_type, self.battlefield)
                     break
                 except ValueError:
-                    print(error_str.format(obj_str.value_error_str))
+                    print(error_str.format(ErrorStrings.value_error_str))
                 except KeyError:
-                    print(error_str.format(obj_str.key_error_str))
+                    print(error_str.format(ErrorStrings.key_error_str))
                 except IndexError:
-                    print(error_str.format(obj_str.index_error_str))
+                    print(error_str.format(ErrorStrings.index_error_str))
                 except BusyCoordinateException:
-                    print(error_str.format(obj_str.busy_coord_error_str))
+                    print(error_str.format(ErrorStrings.busy_coord_error_str))
                 except NotEnoughRoomException:
-                    print(error_str.format(obj_str.not_enough_room_error_str))
+                    print(error_str.format(ErrorStrings.not_enough_room_error_str))
             fleet[ship_type] = ship
         return fleet
     
@@ -206,14 +207,14 @@ class Player:
         ships = [ship for ship in self.fleet.values() if not ship.sunk]
         
         #print caption statement
-        print(NL + line_str1 + NL)
-        print(obj_str.display_ships_intro.format(player_str))
+        print(NL + Formatting.line_str1 + NL)
+        print(DisplayStrings.display_ships_intro.format(player_str))
         
         #print each afloat ship's name, followed by a representation of
         #  correct size (with "+" character")
         num = 1
         for ship in ships:
-            print(obj_str.display_ships_str_main.format(
+            print(DisplayStrings.display_ships_str_main.format(
                 num, ship.type, "+"*ship.size), end="\n")
             num += 1
         print(NL)
@@ -222,11 +223,14 @@ class Player:
     def display_targetting_results(player, coordinate, target_hit):
         if target_hit:
             result_str = NL*2 + \
-                line_wrap3(obj_str.ship_hit_str.format(str(coordinate))) + NL*2
+                Formatting.line_wrap3(
+                    TargettingStrings.ship_hit_str.format(str(coordinate)))\
+                         + NL*2
         else:
             result_str = NL*2 + \
-                obj_str.empty_waters_str.format(str(coordinate)) + NL*2
-        print(NL*2 + obj_str.target_complete + NL)
+                TargettingStrings.empty_waters_str.format(str(coordinate))\
+                     + NL*2
+        print(NL*2 + TargettingStrings.target_complete + NL)
         player.battlefield.display()
         print(result_str)
     
@@ -254,9 +258,9 @@ class Player:
                 player.display_ships()
                 input(continue_str)
                 battlefield.display_wrapped("Enemy")
-                error_str = obj_str.error_str
+                error_str = ErrorStrings.error_str
                 try:
-                    input1 = (input(obj_str.target_cords_str))
+                    input1 = (input(TargettingStrings.target_cords_str))
                     coordinate = (input1[0].upper(), int(input1[1:]))
                     if grid[coordinate] == Battlefield.states[6] \
                         or grid[coordinate] == Battlefield.states[7]\
@@ -264,13 +268,14 @@ class Player:
                         raise TargettedCoordinateException
                     break
                 except ValueError:
-                    print(error_str.format(obj_str.value_error_str))
+                    print(error_str.format(ErrorStrings.value_error_str))
                 except KeyError:
-                    print(error_str.format(obj_str.key_error_str))
+                    print(error_str.format(ErrorStrings.key_error_str))
                 except IndexError:
-                    print(error_str.format(obj_str.index_error_str))
+                    print(error_str.format(ErrorStrings.index_error_str))
                 except TargettedCoordinateException:
-                    print(error_str.format(obj_str.targetted_coord_error_str))
+                    print(error_str.format(
+                        ErrorStrings.targetted_coord_error_str))
             
             shot += 1
             #If no target hit, update coordinate status on the grid to show a
@@ -303,7 +308,7 @@ class Player:
                     break
                 
                 input(continue_str)
-                print(line_str2 + NL*2 + obj_str.target_str)
+                print(Formatting.line_str2 + NL*2 + TargettingStrings.target_str)
                 input(continue_str)
 
 class Computer(Player):
@@ -775,17 +780,18 @@ class Computer(Player):
             self.targetted_coordinates.append(coordinate)
             if not grid[coordinate]:
                 grid[coordinate] = Battlefield.states[6]
-                print(NL*2 + obj_str.incoming_complete + NL)
+                print(NL*2 + TargettingStrings.incoming_complete + NL)
                 battlefield.display()
-                print(NL*2 + obj_str.empty_waters_str.format(
+                print(NL*2 + TargettingStrings.empty_waters_str.format(
                     str(coordinate)) + NL*2)
                 shot += 1
                 last_shot_hit = False
             elif grid[coordinate] == Battlefield.states[5]:
                 grid[coordinate] = Battlefield.states[7]
-                print(NL*2 + obj_str.incoming_complete + NL)
+                print(NL*2 + TargettingStrings.incoming_complete + NL)
                 battlefield.display()
-                print(NL*2 + line_wrap3(obj_str.ship_hit_str.format(
+                print(NL*2 + Formatting.line_wrap3(
+                    TargettingStrings.ship_hit_str.format(
                     str(coordinate))) + NL*2)
                 last_shot_hit = True
                 shot += 1
@@ -800,5 +806,6 @@ class Computer(Player):
                 if player.check_fleet_sunk():
                     break
                 input(continue_str)
-                print(line_str2 + NL*2 + obj_str.incoming_str)
+                print(Formatting.line_str2 + NL*2 + \
+                    TargettingStrings.incoming_str)
                 input(continue_str)
