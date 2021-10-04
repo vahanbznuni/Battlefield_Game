@@ -47,16 +47,15 @@ class Formatting:
         to be added from each side, using ">" character
       side_str2 (str): Formatting line-stringa for headings, 
         to be added from each side, using "<" character
-      side_str3 (str): Formatting empty-space string to be added from each side of
-        a heading-type string, acting as center-align.
+      side_str3 (str): Formatting empty-space string to be added from each side
+       of a heading-type string, acting as center-align.
     Methods:
       line_wrap1, line_wrap12, line_wrap13, side_wrap, center_wrap
     """
 
     #Seperator line string for visual formatting, using "=" character.
-    line_str1 = \
-        """=================================================================\
-    ================="""
+    str_base = "="
+    line_str1 = str_base*86
 
     #Seperator line string for visual formatting, 
     # using alternate characters "-" or "*".
@@ -74,32 +73,37 @@ class Formatting:
 
     #Formatting methods:
     @classmethod
-    def line_wrap1(Class, str):
+    def line_wrap1(cls, str):
         """Return formatted the provided string by adding seperator\
             line_str1 string above and below, with empty space in between."""
-        return Class.line_str1 + NL + str + NL + Class.line_str1
+        return cls.line_str1 + NL + str + NL + cls.line_str1
 
-    def line_wrap2(Class, str):
+    @classmethod
+    def line_wrap2(cls, str):
         """Return formatted the provided string by adding seperator \
             line_str2 string above and below, with empty space in between."""
-        return Class.line_str2 + NL + str + NL + Class.line_str2
+        return cls.line_str2 + NL + str + NL + cls.line_str2
 
-    def line_wrap3(Class, str):
+    @classmethod
+    def line_wrap3(cls, str):
         """Return formatted the provided string by adding seperator \
             line_str3 string above and below, with empty space in between."""
-        return Class.line_str3 + NL + str + NL + Class.line_str3
+        return cls.line_str3 + NL + str + NL + cls.line_str3
 
-    def side_wrap(Class, string):
+    @classmethod
+    def side_wrap(cls, str):
         """Return formatted the provided string by center-aligning and \
-            wrapping with side_str1 from the left, and side_str2 from the right."""
-        half = int((len(string)/2))
-        return Class.side_str1[:-half] + string + Class.side_str2[:-half]
+            wrapping with side_str1 from the left, \
+                and side_str2 from the right."""
+        half = int((len(str)/2))
+        return cls.side_str1[:-half] + str + cls.side_str2[:-half]
 
-    def center_wrap(Class, string):
+    @classmethod
+    def center_wrap(cls, str):
         """Return formatted the provided string by center-aligning it \
             (using measured side_str3 empty-space-string)."""
-        half = int((len(string)/2))
-        return Class.side_str3[:-half] + string + Class.side_str3[:-half]
+        half = int((len(str)/2))
+        return cls.side_str3[:-half] + str + cls.side_str3[:-half]
 
 class OpeningStatements:
     """Opening statements and formatting"""
@@ -116,23 +120,24 @@ class OpeningStatements:
     place_ships_str = "\n\nIt is time to place your ships! Are you ready?"
     ready_str = "Your ships are all set! Here is your Battlefield:"
 
-    def intro_str(Class):
+    @classmethod
+    def intro_str(cls):
         """print opening and introductory statements, \
             broken up with user input to continue."""
         print(NL + \
-            Formatting.line_wrap1(Formatting.center_wrap(Class.header_str)))
+            Formatting.line_wrap1(Formatting.center_wrap(cls.header_str)))
         print(NL*2 + \
-            Formatting.line_wrap3(Formatting.center_wrap(Class.welcome_str)))
+            Formatting.line_wrap3(Formatting.center_wrap(cls.welcome_str)))
         input(continue_str)
-        print(textwrap.dedent(NL + Formatting.line_str1 + Class.game_desc_str1))
+        print(textwrap.dedent(NL + Formatting.line_str1 + cls.game_desc_str1))
         input(continue_str)
-        print(textwrap.dedent(NL + Formatting.line_str1 + Class.game_desc_str2))
+        print(textwrap.dedent(NL + Formatting.line_str1 + cls.game_desc_str2))
         input(continue_str)
-        print(textwrap.dedent(NL + Formatting.line_str1 + Class.game_desc_str3))
+        print(textwrap.dedent(NL + Formatting.line_str1 + cls.game_desc_str3))
         input(continue_str)
-        print(textwrap.dedent(NL + Formatting.line_str1 + Class.game_desc_str4))
+        print(textwrap.dedent(NL + Formatting.line_str1 + cls.game_desc_str4))
         input(continue_str)
-        print(textwrap.dedent(NL + Formatting.line_str1 + Class.place_ships_str))
+        print(textwrap.dedent(NL + Formatting.line_str1 + cls.place_ships_str))
         input(continue_str)
 
 class ClosingStatements:
@@ -189,11 +194,20 @@ class ErrorStrings:
     """
 
     error_str = NL*2 + "INCORRECT INPUT! \n{} Please try again!"
-    value_error_str = \
-        "Make sure to enter exact coordinates (for starting coordinate) \nor exact choice number (for ending coordinate)."
+    value_error_str_p1 = \
+        "Make sure to enter exact coordinates (for starting coordinate)"
+    value_error_str_p2 = \
+        "or exact choice number (for ending coordinate)."
+    value_error_str = value_error_str_p1 + NL + value_error_str_p2
     key_error_str = "Make sure your coordinates are in range!"
-    index_error_str = "Make sure to enter exact coordinates (for starting coordinate) \nor exact choice number (for ending coordinate)."
+    index_error_str_p1 = \
+        "Make sure to enter exact coordinates (for starting coordinate)"
+    index_error_str_p2 = \
+        "or exact choice number (for ending coordinate)."
+    index_error_str = index_error_str_p1 + NL + index_error_str_p2
     busy_coord_error_str = "There is already a ship in that location!!"
-    targetted_coord_error_str = "These Coordinates have already been targetted!!"
-    not_enough_room_error_str = "There is no enough room for this ship at that coordinate!"
+    targetted_coord_error_str = \
+        "These Coordinates have already been targetted!!"
+    not_enough_room_error_str = \
+        "There is no enough room for this ship at that coordinate!"
     
