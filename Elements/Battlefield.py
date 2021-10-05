@@ -14,11 +14,6 @@ if __name__ == "__main__":
     import os
     sys.path.append(os.path.join( os.path.dirname( __file__ ), '..' ))
 
-# if __name__ == "__main__":
-#     import sys
-#     import os
-#     sys.path.append(os.path.join( os.path.dirname( __file__ ), '..' ))
-
 import string
 from Elements.Battlefield_Strings.Battlefield_Strings import\
     NL, Formatting, DisplayStrings
