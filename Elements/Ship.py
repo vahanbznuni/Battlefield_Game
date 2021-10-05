@@ -5,8 +5,13 @@ The Ship class contains data relating to each ship, including its coordinates,
   its name/type, and its health status.
 """
 
-from Battlefield_Objects.Battlefield import Battlefield
-from Battlefield_Strings.Battlefield_Strings import NL, Formatting
+if __name__ == "__main__":
+    import sys
+    import os
+    sys.path.append(os.path.join( os.path.dirname( __file__ ), '..' ))
+
+from Elements.Battlefield import Battlefield
+from Elements.Battlefield_Strings.Battlefield_Strings import NL, Formatting
 
 class Ship:
     """contains data structure(s) relating to each ship, including its\

@@ -1,19 +1,26 @@
 
 """
-Player Module.
+Player Module. Contains interactive user - and AI gameplay elements.
 
 The Player class stores each player's individual Battlefield, a listing of their 
   ships; contains interagtive ship placement and targetting functionality.
 The Computer subclass of Player overrides the ship placement and targetting
   functionality of parent class (custumized for AI).
+The Ship module contains the Ship object (i.e. ship-related data).
+The Battlefield_Strings package
 """
 
-from Battlefield_Objects.Battlefield import Battlefield, ComputerBattlefield
-from Battlefield_Objects.Ship import Ship
-from Battlefield_Strings.Battlefield_Strings import \
+if __name__ == "__main__":
+    import sys
+    import os
+    sys.path.append(os.path.join( os.path.dirname( __file__ ), '..' ))
+
+from Elements.Battlefield import Battlefield, ComputerBattlefield
+from Elements.Ship import Ship
+from Elements.Battlefield_Strings.Battlefield_Strings import \
     NL, continue_str, Formatting, DisplayStrings, ShipPLacementStrings, \
         TargettingStrings, ErrorStrings
-from Battlefield_Objects.InputExceptions import \
+from Elements.Exceptions.InputExceptions import \
     BusyCoordinateException, TargettedCoordinateException, NotEnoughRoomException
 import random
 

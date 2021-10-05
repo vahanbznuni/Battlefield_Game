@@ -10,7 +10,7 @@ import textwrap
 import os
 
 #Path of current module's directory
-dir_path = os.getcwd() + "\\Battlefield Game\\Battlefield_Strings\\"
+dir_path = os.getcwd() + "\\Battlefield_Game\\Elements\\Battlefield_Strings\\"
 
 NL = "\n"
 

@@ -22,8 +22,8 @@ The end_game function contains the closing statements - including winner\
      statement.
 """
 
-from Battlefield_Objects.Player import Player, Computer
-from Battlefield_Strings import Battlefield_Strings as strings
+from Elements.Player import Player, Computer
+from Elements.Battlefield_Strings import Battlefield_Strings as strings
 NL ="\n"
 
 def check_winner():

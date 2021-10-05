@@ -9,8 +9,18 @@ The ComputerBattlefield subclass of Battlefield class overrides the display
 
 """
 
+if __name__ == "__main__":
+    import sys
+    import os
+    sys.path.append(os.path.join( os.path.dirname( __file__ ), '..' ))
+
+# if __name__ == "__main__":
+#     import sys
+#     import os
+#     sys.path.append(os.path.join( os.path.dirname( __file__ ), '..' ))
+
 import string
-from Battlefield_Strings.Battlefield_Strings import \
+from Elements.Battlefield_Strings.Battlefield_Strings import\
     NL, Formatting, DisplayStrings
 
 class Battlefield:
@@ -303,7 +313,7 @@ class Battlefield:
             coordinates of a ship placed in that directrion from the provided
             coordinate as a starting point, given there is enouth space.
         """
-        from Battlefield_Objects.Ship import Ship
+        from Elements.Ship import Ship
         ship_size = Ship.types[ship_type]
         options = \
             {"Up: ": None, "Down: ": None, "Left: ": None, "Right: ": None, }
