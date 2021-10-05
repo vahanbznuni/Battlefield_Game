@@ -1,5 +1,5 @@
 
-This Battlefield game is a Python Terminal version of the classic 'Battlefield' game. 
+This Battlefield game is a Python Terminal version of the classic 'Battleship' game. 
 In this version, you (player 1) are playing against the computer.
 Each player (in this case you (player1) and the computer (player 2)) has their own Battlefield
 of 10 x 10 squares (coordinates), and 5 ships of different lengths.
