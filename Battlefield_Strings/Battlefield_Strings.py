@@ -10,9 +10,7 @@ import textwrap
 import os
 
 #Path of current module's directory
-dir_path = os.environ.get("HOME") + \
-    "\\OneDrive\\Documents\\Computer Science\\_6_Projects\
-\\_1_Code Academy - CS101\\Final Project\\Battlefield Game\\Battlefield_Strings\\"
+dir_path = os.getcwd() + "\\Battlefield Game\\Battlefield_Strings\\"
 
 NL = "\n"
 
