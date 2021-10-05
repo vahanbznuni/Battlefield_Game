@@ -228,6 +228,14 @@ class Player:
 
     @staticmethod
     def display_targetting_results(player, coordinate, target_hit):
+        """Display Battlefield and print statement explaining retults of\
+            targetting attempt
+       
+        Args:
+          coordinate (tuple): (a coordinate).
+          target_hit (bool): True if a target was hit.
+        """
+        #Custom targetting status statements for hit or missed targetting.
         if target_hit:
             result_str = NL*2 + \
                 Formatting.line_wrap3(
@@ -237,21 +245,24 @@ class Player:
             result_str = NL*2 + \
                 TargettingStrings.empty_waters_str.format(str(coordinate))\
                      + NL*2
+        
+        #Print Statements about completed targetting, display battlefield,
+        # and print targetting status.
         print(NL*2 + TargettingStrings.target_complete + NL)
         player.battlefield.display()
         print(result_str)
     
     def target(self, player):
         """target the opposing player's battlefield based on coordinates \
-            input by the user (intended for player1)
+            input by the user (intended for player1). \
+                **(Overridden by Computer subclass)**
 
         Args:
-          player (object): the being targetted
+          player (object): the player being targetted
         """
         #Track targetting attempt, and whether last attempt was successful
         shot = 0
         last_shot_hit = False
-        
         #if last attempt successful (target hit), the targetting repeats.
         while shot < 1 or last_shot_hit:
             battlefield = player.battlefield
@@ -314,6 +325,8 @@ class Player:
                 if player.check_fleet_sunk():
                     break
                 
+                #Print a statement indicating that another turn is coming (
+                #  and wait for continue inputs).
                 input(continue_str)
                 print(Formatting.line_str2 + NL*2 + TargettingStrings.target_str)
                 input(continue_str)
@@ -587,6 +600,15 @@ class Computer(Player):
         return options
     
     def target_options(self, player):
+        """custom AI algorhythm that returns smart targetting options, depending\
+            on whether or not there are partially hit ships ("active targets")
+
+        Args:
+          player: the player being targetted
+        Returns:
+          A list of smart targetting options (coord) for the main target\
+              to randomly choose from
+        """
         battlefield = player.battlefield
         target_options = []
         coord_up = battlefield.coord_up                    
@@ -594,34 +616,52 @@ class Computer(Player):
         coord_left = battlefield.coord_left                   
         coord_right = battlefield.coord_right
         
+        #If there are "active targets.":
         if self.active_targets:
             options = []
+            #Options - return only if there are non-adjascent "active targets" 
+            #  within the same row or column.
             for coordinate in self.active_targets:
                 options.extend(self.non_adjascent_targets(coordinate, player))
+            #Return unique options (if any) back to calling function
             if options:
                 target_options.extend(
-                    [option for option in options if option not in target_options])
+                    [option for option in options\
+                         if option not in target_options])
                 return target_options
             
+            #If no options returned by previous section.
+            #If there are adjascent "active target(s)," return options on\
+            #  both sides of the target(s), (along the axis on which
+            #  the coordiantes are adjascent)
             else:
                 for coordinate in self.active_targets:   
                     if coord_up(coordinate):
                         options.extend(
-                            self.adjascent_targets(coord_up, coordinate, player))
+                            self.adjascent_targets(
+                                coord_up, coordinate, player))
                     if coord_down(coordinate):
                         options.extend(
-                            self.adjascent_targets(coord_down, coordinate, player))
+                            self.adjascent_targets(
+                                coord_down, coordinate, player))
                     if coord_left(coordinate):
                         options.extend(
-                            self.adjascent_targets(coord_left, coordinate, player))
+                            self.adjascent_targets(
+                                coord_left, coordinate, player))
                     if coord_right(coordinate):
                         options.extend(
-                            self.adjascent_targets(coord_right, coordinate, player))
+                            self.adjascent_targets(
+                                coord_right, coordinate, player))
+            
+                #Return unique options (if any) back to calling function
                 if options:
                     target_options.extend([option for option in options \
                         if option not in target_options])
                     return target_options
                 
+                #If "active targets" are neither adjascent, nor in the same
+                #  row or column, return options on all 4 sides of the 
+                # target(s)
                 else:    
                     for coordinate in self.active_targets:
                         if coord_up(coordinate):
@@ -648,12 +688,15 @@ class Computer(Player):
                         [option for option in options \
                             if option not in target_options])
                     return target_options
-        
+        #If there are no active targets:
         else:
+            #Obtain all available ("empty") coordinates as "available targets"
             available_targets = \
                 [coordinate for coordinate in battlefield.coordinates \
                     if not battlefield.grid[coordinate]\
                  or battlefield.grid[coordinate] == Battlefield.states[5]]  
+            #Create preferred options lists, top be filled based on different
+            #  criteria
             options = []
             options_preferred_A = []
             options_preferred_B = []
@@ -663,13 +706,18 @@ class Computer(Player):
             options_preferred_F = []
             options_preferred_G = []
             
+            #Temporary collection 1 (all preferred lists)
             preferred_lists_temp_1 = [options_preferred_A, options_preferred_B,
              options_preferred_C, options_preferred_D, options_preferred_E, 
              options_preferred_F, options_preferred_G]
             
+            #Temporary collection 2 (select preferred lists)
             preferred_lists_temp_2 = [options_preferred_A, options_preferred_B, 
              options_preferred_C, options_preferred_D]
             
+            #Check available targets for size clearance, based on the smallest
+            #  enemy ship afloat, and add all coordinates that have enough 
+            #  room to hide a ship.
             for coordinate in available_targets:
                 for ship in player.fleet.values():
                     if not ship.sunk:
@@ -681,35 +729,51 @@ class Computer(Player):
                                 options.append(coordinate)
             
             for option in options:
+                #Efficient Targetting System for widely distributed targetting.
+                
+                #True if there are 2 untargetted spaces above a coordinate
                 up_2x = (coord_up(option) \
                     and coord_up(option) in available_targets)\
                     and (coord_up(coord_up(option)) \
                         and coord_up(coord_up(option)) in available_targets)
                 
+                #True if there are 2 untargetted spaces below a coordinate
                 down_2x = (coord_down(option) \
                     and coord_down(option) in available_targets)\
                     and (coord_down(coord_down(option)) \
                         and coord_down(coord_down(option)) in available_targets)
                 
+                #True if there are 2 untargetted spaces to the left of
+                #  a coordinate
                 left_2x = (coord_left(option) \
                     and coord_left(option) in available_targets)\
                     and (coord_left(coord_left(option)) \
                         and coord_left(coord_left(option)) in available_targets)
                 
+                #True if there are 2 untargetted spaces to the right of
+                #  a coordinate
                 right_2x = (coord_right(option) \
                     and coord_right(option) in available_targets)\
                     and (coord_right(coord_right(option)) \
                         and coord_right(coord_right(option)) in available_targets)
                 
+                #True if there is 1 untargetted space above a coordinate
                 up_1x = (coord_up(option) \
                     and coord_up(option) in available_targets)
+                #True if there is 1 untargetted space  below a coordinate
                 down_1x = (coord_down(option) \
                     and coord_down(option) in available_targets)
+                #True if there is 1 untargetted space to the left of
+                #  a coordinate
                 left_1x = (coord_left(option) \
                     and coord_left(option) in available_targets)
+                #True if there is 1 untargetted space to the right of
+                #  a coordinate
                 right_1x = (coord_right(option) \
                     and coord_right(option) in available_targets)
                 
+                #Combinattions of the above. Sorted from high priority
+                #(far from targetted coordinates) to low (near targetted)
                 A = (up_2x and down_2x and left_2x and right_2x)
                 B = (up_2x and down_2x and left_1x and right_1x) \
                     or (up_1x and down_1x and left_2x and right_2x)
@@ -720,6 +784,8 @@ class Computer(Player):
                 F = ((up_1x and down_1x) or (left_1x and right_1x))
                 G = (up_1x or down_1x or left_1x or right_1x)
                 
+                #Add coordinate to different prefferred lists, based on 
+                #  criteria A-G above.
                 if A and option not in options_preferred_A:
                     options_preferred_A.append(option)
                 elif B and option not in options_preferred_B:
@@ -735,32 +801,57 @@ class Computer(Player):
                 elif G and option not in options_preferred_G:
                     options_preferred_G.append(option)
                     
+            #2 Collections of preferred lists that are not empty.
             preferred_lists_1 = [x for x in preferred_lists_temp_1 if x]
             preferred_lists_2 = [x for x in preferred_lists_temp_2 if x]
+            
+            #Alternate between highly restrictive selection (most restrictive
+            # list from most restrictive collection) and a random selection from
+            # the lesser restrictive collection
+            
+            #This achieves a balance between the statistically most efficient 
+            #  targetting, and flexibility of selection, to include less 
+            #  efficient but commonly used coordinates, such as grid borders
+            #  and adjascently placed ships.
             
             if preferred_lists_1:
                 alternative_num = random.randint(0, 1)
                 if alternative_num == 0 or not preferred_lists_2:
+                    #Select Top list in preferred collection #1
                     target_options.extend(
                         [option for option in preferred_lists_1[0]\
                              if option not in target_options])
                 else:
+                    #Select from a random list from the lesser restrictive
+                    # collection #2
                     target_options.extend(
                         [option for option in preferred_lists_2[
                             random.randint(0, len(preferred_lists_2) - 1)]\
                                  if option not in target_options])
+                #Return unique options (if any) back to calling function
                 return target_options
+            
+            #If still no options returned, return all unique options left
             else:
                 target_options.extend([option for option in options \
                     if option not in target_options])
                 return target_options
 
     def target(self, player):
+        """target the opposing player's battlefield based on coordinates \
+            input by AI algorhythm. **(Overrides by parent class)**
+
+        Args:
+          player (object): the player being targetted
+        """
+        #Track targetting attempt, and whether last attempt was successful
         shot = 0
         last_shot_hit = False
+        #if last attempt successful (target hit), the targetting repeats.
         while shot < 1 or last_shot_hit:
             battlefield = player.battlefield
             grid = player.battlefield.grid
+            #Display user ships, user battlefield,
             rows = battlefield.rows
             columns = battlefield.columns
             player.display_ships()
@@ -769,14 +860,20 @@ class Computer(Player):
             input(continue_str)
             while True:
                 try:
+                    #Request options from AI algorhythm, and select random
+                    #  option
                     options = self.target_options(player)
                     if options:
                             coordinate = options[
                                 random.randint(0, len(options)-1)]
+                    #Should there be no options, fire at a random coordinate.
                     else:
                         coordinate = (rows[
                             random.randint(0, len(rows)-1)], 
                             random.randint(1, len(columns)))
+                    #Raise exception if input coordinate has already been targetted.
+                    #Handle any exceptions (pass). If exceptions occur,
+                    #  targetting is attempted again.
                     if grid[coordinate] == Battlefield.states[6] \
                         or grid[coordinate] == Battlefield.states[7]\
                         or grid[coordinate] == Battlefield.states[9]:
@@ -784,15 +881,26 @@ class Computer(Player):
                     break
                 except Exception as e:
                     pass
+            
+            shot += 1
+            #Add targetted coordinate to a tracking list
             self.targetted_coordinates.append(coordinate)
+            
+            #If no target hit, update coordinate status on the grid to show a
+            #  targetted (missed) coordiante, display battlefield, print a
+            #  status statement, and update attempt count & success tracket
+            #  (exiting function)            
             if not grid[coordinate]:
                 grid[coordinate] = Battlefield.states[6]
-                print(NL*2 + TargettingStrings.incoming_complete + NL)
-                battlefield.display()
-                print(NL*2 + TargettingStrings.empty_waters_str.format(
-                    str(coordinate)) + NL*2)
-                shot += 1
+                self.display_targetting_results(player, coordinate, False)
                 last_shot_hit = False
+            
+            #If a target was hit, update coordinate status on the grid to show
+            #  a hit coordiante,\
+            #  display battlefield, print a status statement, and update attempt
+            #  count & success tracket (exiting function)
+            #  Also, add coordinate lists tracking hit coordinates and
+            #  "Active targets"
             elif grid[coordinate] == Battlefield.states[5]:
                 grid[coordinate] = Battlefield.states[7]
                 print(NL*2 + TargettingStrings.incoming_complete + NL)
@@ -801,9 +909,15 @@ class Computer(Player):
                     TargettingStrings.ship_hit_str.format(
                     str(coordinate))) + NL*2)
                 last_shot_hit = True
-                shot += 1
                 self.hit_coordinates.append(coordinate)
                 self.active_targets.append(coordinate)
+
+                #Check each enemy ship to see if they've been sunk (updating
+                #  sunk attribute of the ship). If sunk, remove ship's 
+                #  coordinates from "active targets" tracking list.
+                #Check if entire fleet has been sunk (updating fleet_sunk
+                #  attribute of the player)
+                #If the fleet has been sunk, break out - to end the game
                 for ship in player.fleet.values():
                     if coordinate in ship.coordinates:
                         ship.check_sunk()
@@ -812,6 +926,9 @@ class Computer(Player):
                                 self.active_targets.remove(coord)
                 if player.check_fleet_sunk():
                     break
+                
+                #Print a statement indicating that another turn is coming (
+                #  and wait for continue inputs).
                 input(continue_str)
                 print(Formatting.line_str2 + NL*2 + \
                     TargettingStrings.incoming_str)
