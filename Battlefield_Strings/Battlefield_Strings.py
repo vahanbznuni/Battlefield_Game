@@ -4,7 +4,6 @@ Strings Module. Contains the collection of majority if strings used by the\
 
 
 The exctract_str function extracts larger strings saved into seperate text files
-
 """
 
 import textwrap
