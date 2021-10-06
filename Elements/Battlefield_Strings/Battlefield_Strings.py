@@ -10,7 +10,7 @@ import textwrap
 import os
 
 #Path of current module's directory
-dir_path = os.getcwd() + "\\Battlefield_Game\\Elements\\Battlefield_Strings\\"
+dir_path = os.path.dirname(__file__)
 
 NL = "\n"
 
@@ -26,7 +26,7 @@ def exctract_str(text_file_name):
     Returns:
       string containint entire contents of provided text file
     """
-    with open(dir_path + text_file_name, 'r') as filename:
+    with open(os.path.join(dir_path, text_file_name), 'r') as filename:
         text = filename.read()
     return text
 
